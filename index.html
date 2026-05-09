@@ -1487,18 +1487,24 @@ function makeConjugationQuestion(verb, tense) {
   };
 }
 
+function makeTypeSpanishQuestion(word) {
+  return { type: 'typeSpanish', wordId: word.id, prompt: word.da, answer: word.es,
+    hint: word.pos, ex: word.ex };
+}
+
 function generateWarmupSession(wordProgress, allWords) {
   const today = todayStr();
   const due = allWords.filter(w => {
     const p = wordProgress[w.id];
-    if (!p) return false; // only review known words
+    if (!p) return false;
     return p.due <= today;
   });
-  const toReview = pickRandom(due.length ? due : allWords.slice(0, 20), Math.min(8, due.length || 8));
-  return toReview.map(w => {
+  const pool = pickRandom(due.length ? due : allWords.slice(0, 30), Math.min(20, Math.max(16, due.length)));
+  return pool.map(w => {
     const r = Math.random();
-    if (r < 0.5) return makeVocabQuestion(w, allWords, 'es→da');
-    return makeVocabQuestion(w, allWords, 'da→es');
+    if (r < 0.35) return makeVocabQuestion(w, allWords, 'es→da');
+    if (r < 0.70) return makeVocabQuestion(w, allWords, 'da→es');
+    return makeTypeSpanishQuestion(w);
   });
 }
 
@@ -1508,22 +1514,24 @@ function generateLessonSession(wordProgress, allWords, profile) {
   const levelIdx = levelOrder.indexOf(userLevel);
   const eligibleLevels = levelOrder.slice(0, levelIdx + 1);
   const eligible = allWords.filter(w => eligibleLevels.includes(w.level));
-  // Prefer unseen words
   const unseen = eligible.filter(w => !wordProgress[w.id]);
-  const pool = unseen.length >= 4 ? pickRandom(unseen, 8) : pickRandom(eligible, 8);
+  const pool = unseen.length >= 8 ? pickRandom(unseen, 16) : pickRandom(eligible, 16);
   const questions = [];
-  const pairWords = pickRandom(pool, 4);
-  questions.push(makePairQuestion(pairWords));
-  const remaining = pool.filter(w => !pairWords.find(p => p.id === w.id));
-  remaining.slice(0, 3).forEach(w => questions.push(makeVocabQuestion(w, allWords)));
-  const clozeWord = remaining[3] || pool[0];
-  if (clozeWord) questions.push(makeClozeQuestion(clozeWord));
+  // Two pair rounds
+  questions.push(makePairQuestion(pickRandom(pool, 4)));
+  questions.push(makePairQuestion(pickRandom(pool, 4)));
+  // Choice questions
+  pickRandom(pool, 6).forEach(w => questions.push(makeVocabQuestion(w, allWords)));
+  // Type Spanish
+  pickRandom(pool, 4).forEach(w => questions.push(makeTypeSpanishQuestion(w)));
+  // Cloze
+  pickRandom(pool, 3).forEach(w => questions.push(makeClozeQuestion(w)));
   return shuffle(questions);
 }
 
 function generateDictationSession(allWords) {
-  const targets = pickRandom(allWords.filter(w => w.level === 'A1' || w.level === 'A2'), 3);
-  return targets.map(w => makeDictationQuestion(w));
+  const targets = pickRandom(allWords.filter(w => w.level === 'A1' || w.level === 'A2'), 8);
+  return targets.map(w => Math.random() < 0.6 ? makeDictationQuestion(w) : makeTypeSpanishQuestion(w));
 }
 
 function generateDeepVerbSession(verbName, tense) {
@@ -1593,13 +1601,20 @@ const FeedbackBar = ({ feedback, onAdvance, isLast, t }) => {
           )}
         </div>
       </div>
-      <button onClick={onAdvance} style={{
-        marginTop:14, width:'100%', padding:'14px', background:btnBg,
-        color:'#fff', border:'none', borderRadius:14,
-        fontFamily:t.sans, fontSize:15, fontWeight:700, cursor:'pointer',
-      }}>
-        {isLast ? 'Afslut' : 'Fortsæt →'}
-      </button>
+      {ok ? (
+        <div style={{ marginTop:14, textAlign:'center', fontFamily:t.sans,
+          fontSize:13, color:'#3F8A4E', opacity:0.7 }}>
+          Fortsætter automatisk…
+        </div>
+      ) : (
+        <button onClick={onAdvance} style={{
+          marginTop:14, width:'100%', padding:'14px', background:btnBg,
+          color:'#fff', border:'none', borderRadius:14,
+          fontFamily:t.sans, fontSize:15, fontWeight:700, cursor:'pointer',
+        }}>
+          {isLast ? 'Afslut' : 'Fortsæt →'}
+        </button>
+      )}
     </div>
   );
 };
@@ -1839,6 +1854,66 @@ const ClozeExercise = ({ q, t, onAnswer, feedback }) => {
   );
 };
 
+const TypeSpanishExercise = ({ q, t, onAnswer, feedback }) => {
+  const [text, setText] = React.useState('');
+  const inputRef = React.useRef(null);
+  React.useEffect(() => { if (inputRef.current) inputRef.current.focus(); }, []);
+
+  const norm = (s) => s.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[.,!?¿¡]/g, '').trim();
+
+  const submit = () => {
+    if (!text.trim() || feedback) return;
+    const ok = norm(text) === norm(q.answer);
+    onAnswer(ok, text, q.answer);
+  };
+
+  const handleKey = (e) => { if (e.key === 'Enter') submit(); };
+
+  return (
+    <div>
+      <div style={{ background:t.card, border:`1px solid ${t.border}`, borderRadius:20,
+        padding:'28px 24px', marginBottom:20, textAlign:'center' }}>
+        <div style={{ fontFamily:t.sans, fontSize:11, letterSpacing:1.2, color:t.muted,
+          fontWeight:700, textTransform:'uppercase', marginBottom:10 }}>Skriv på spansk</div>
+        <div style={{ fontFamily:t.serif, fontSize:34, color:t.ink, lineHeight:1.1,
+          marginBottom:6 }}>{q.prompt}</div>
+        {q.hint && <div style={{ fontFamily:t.sans, fontSize:13, color:t.muted,
+          fontStyle:'italic' }}>{q.hint}</div>}
+      </div>
+      <input
+        ref={inputRef}
+        value={text}
+        onChange={e => setText(e.target.value)}
+        onKeyDown={handleKey}
+        disabled={!!feedback}
+        placeholder="Skriv det spanske ord..."
+        style={{ width:'100%', padding:'16px 18px', boxSizing:'border-box',
+          borderRadius:16, border:`2px solid ${feedback
+            ? (feedback.ok ? '#3F8A4E' : '#C8553D')
+            : text ? t.primary : t.border}`,
+          background:t.card, color:t.ink, fontFamily:t.serif, fontSize:22,
+          outline:'none', textAlign:'center', transition:'border 0.2s' }}
+      />
+      {q.ex && !feedback && (
+        <div style={{ fontFamily:t.serif, fontStyle:'italic', fontSize:13,
+          color:t.muted, textAlign:'center', marginTop:10 }}>{q.ex}</div>
+      )}
+      {!feedback && (
+        <button onClick={submit} disabled={!text.trim()} style={{
+          marginTop:16, width:'100%', padding:14, borderRadius:14, border:'none',
+          background:text.trim() ? t.ink : t.border,
+          color:text.trim() ? t.bg : t.muted,
+          fontFamily:t.sans, fontWeight:700, fontSize:15,
+          cursor:text.trim() ? 'pointer' : 'default' }}>
+          Tjek svar
+        </button>
+      )}
+    </div>
+  );
+};
+
 const GrammarExercise = ({ q, t, onAnswer, feedback }) => {
   const [picked, setPicked] = React.useState(null);
   return (
@@ -1912,6 +1987,14 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
     setResults(resultsRef.current);
   };
 
+  // Auto-advance on correct answer (after 1.2s)
+  React.useEffect(() => {
+    if (feedback && feedback.ok && q && q.type !== 'pair') {
+      const timer = setTimeout(() => advance(), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [feedback]);
+
   // Auto-advance pair exercises (no feedback bar)
   React.useEffect(() => {
     if (feedback && q && q.type === 'pair') {
@@ -1958,6 +2041,7 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
     if (q.type === 'pair') return <PairExercise {...props}/>;
     if (q.type === 'cloze') return <ClozeExercise {...props}/>;
     if (q.type === 'dictation') return <DictationExercise {...props}/>;
+    if (q.type === 'typeSpanish') return <TypeSpanishExercise {...props}/>;
     return <div style={{color:t.muted,padding:20}}>Ukendt øvelsestype: {q.type}</div>;
   };
 
