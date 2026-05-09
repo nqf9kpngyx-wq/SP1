@@ -620,6 +620,456 @@ const WORDS = [
   { id:'w144',es:'perdurar',da:'at vare ved',level:'B2',pos:'v',ex:'Su influencia perdura.' },
   { id:'w145',es:'precario',da:'usikker/skrøbelig',level:'B2',pos:'adj',ex:'Una situación precaria.' },
   { id:'w146',es:'índole',da:'natur/karakter',level:'B2',pos:'n.f',ex:'Un problema de índole personal.' },
+
+  // ── MAD & DRIKKE ──────────────────────────────────────────
+  { id:'w147',es:'fruta',da:'frugt',level:'A1',pos:'n.f',ex:'Me gusta la fruta.' },
+  { id:'w148',es:'manzana',da:'æble',level:'A1',pos:'n.f',ex:'Quiero una manzana.' },
+  { id:'w149',es:'naranja',da:'appelsin',level:'A1',pos:'n.f',ex:'El zumo de naranja es rico.' },
+  { id:'w150',es:'plátano',da:'banan',level:'A1',pos:'n.m',ex:'Como un plátano cada día.' },
+  { id:'w151',es:'verdura',da:'grøntsag',level:'A1',pos:'n.f',ex:'Las verduras son sanas.' },
+  { id:'w152',es:'carne',da:'kød',level:'A1',pos:'n.f',ex:'No como mucha carne.' },
+  { id:'w153',es:'pescado',da:'fisk (mad)',level:'A1',pos:'n.m',ex:'El pescado está fresco.' },
+  { id:'w154',es:'pollo',da:'kylling',level:'A1',pos:'n.m',ex:'Quiero pollo con arroz.' },
+  { id:'w155',es:'arroz',da:'ris',level:'A1',pos:'n.m',ex:'El arroz está listo.' },
+  { id:'w156',es:'pasta',da:'pasta',level:'A1',pos:'n.f',ex:'La pasta italiana es deliciosa.' },
+  { id:'w157',es:'sopa',da:'suppe',level:'A1',pos:'n.f',ex:'La sopa está caliente.' },
+  { id:'w158',es:'ensalada',da:'salat',level:'A1',pos:'n.f',ex:'Una ensalada mixta, por favor.' },
+  { id:'w159',es:'queso',da:'ost',level:'A1',pos:'n.m',ex:'Me encanta el queso.' },
+  { id:'w160',es:'huevo',da:'æg',level:'A1',pos:'n.m',ex:'Quiero dos huevos fritos.' },
+  { id:'w161',es:'aceite',da:'olie',level:'A1',pos:'n.m',ex:'El aceite de oliva es bueno.' },
+  { id:'w162',es:'sal',da:'salt',level:'A1',pos:'n.f',ex:'Necesito más sal.' },
+  { id:'w163',es:'azúcar',da:'sukker',level:'A1',pos:'n.m',ex:'¿Quieres azúcar?' },
+  { id:'w164',es:'vino',da:'vin',level:'A1',pos:'n.m',ex:'Un vaso de vino tinto.' },
+  { id:'w165',es:'cerveza',da:'øl',level:'A1',pos:'n.f',ex:'Una cerveza fría, por favor.' },
+  { id:'w166',es:'zumo',da:'juice',level:'A1',pos:'n.m',ex:'Un zumo de naranja.' },
+  { id:'w167',es:'té',da:'te',level:'A1',pos:'n.m',ex:'¿Prefieres té o café?' },
+  { id:'w168',es:'desayuno',da:'morgenmad',level:'A1',pos:'n.m',ex:'El desayuno es a las ocho.' },
+  { id:'w169',es:'almuerzo',da:'frokost',level:'A1',pos:'n.m',ex:'El almuerzo es a las dos.' },
+  { id:'w170',es:'cena',da:'aftensmad',level:'A1',pos:'n.f',ex:'La cena es a las nueve.' },
+  { id:'w171',es:'postre',da:'dessert',level:'A2',pos:'n.m',ex:'¿Hay postre hoy?' },
+  { id:'w172',es:'receta',da:'opskrift',level:'A2',pos:'n.f',ex:'Sigo la receta.' },
+  { id:'w173',es:'sabor',da:'smag',level:'A2',pos:'n.m',ex:'Tiene un sabor especial.' },
+  { id:'w174',es:'picante',da:'stærk/krydret',level:'A2',pos:'adj',ex:'La salsa es muy picante.' },
+  { id:'w175',es:'dulce',da:'sød',level:'A2',pos:'adj',ex:'Este postre es muy dulce.' },
+  { id:'w176',es:'amargo',da:'bitter',level:'A2',pos:'adj',ex:'El café solo es amargo.' },
+  { id:'w177',es:'caliente',da:'varm',level:'A2',pos:'adj',ex:'La sopa está caliente.' },
+  { id:'w178',es:'frío',da:'kold',level:'A2',pos:'adj',ex:'Quiero agua fría.' },
+  { id:'w179',es:'hambre',da:'sult',level:'A2',pos:'n.f',ex:'Tengo mucha hambre.' },
+  { id:'w180',es:'sed',da:'tørst',level:'A2',pos:'n.f',ex:'Tengo sed. ¿Hay agua?' },
+  { id:'w181',es:'cocinar',da:'at lave mad',level:'A2',pos:'v',ex:'Me gusta cocinar.' },
+  { id:'w182',es:'probar',da:'at smage/prøve',level:'A2',pos:'v',ex:'¿Puedo probar?' },
+  { id:'w183',es:'delicioso',da:'lækker/dejlig',level:'A2',pos:'adj',ex:'¡Está delicioso!' },
+  { id:'w184',es:'paella',da:'paella',level:'A2',pos:'n.f',ex:'La paella valenciana es famosa.' },
+  { id:'w185',es:'tortilla',da:'tortilla/æggebagt',level:'A2',pos:'n.f',ex:'Una tortilla española.' },
+
+  // ── FAMILIE & RELATIONER ──────────────────────────────────
+  { id:'w186',es:'abuelo',da:'bedstefar',level:'A1',pos:'n.m',ex:'Mi abuelo tiene ochenta años.' },
+  { id:'w187',es:'abuela',da:'bedstemor',level:'A1',pos:'n.f',ex:'Mi abuela cocina muy bien.' },
+  { id:'w188',es:'hijo',da:'søn',level:'A1',pos:'n.m',ex:'Tengo un hijo.' },
+  { id:'w189',es:'hija',da:'datter',level:'A1',pos:'n.f',ex:'Mi hija estudia medicina.' },
+  { id:'w190',es:'tío',da:'onkel',level:'A1',pos:'n.m',ex:'Mi tío vive en México.' },
+  { id:'w191',es:'tía',da:'tante',level:'A1',pos:'n.f',ex:'Mi tía es profesora.' },
+  { id:'w192',es:'primo',da:'fætter',level:'A1',pos:'n.m',ex:'Mi primo es simpático.' },
+  { id:'w193',es:'prima',da:'kusine',level:'A1',pos:'n.f',ex:'Mi prima vive en Madrid.' },
+  { id:'w194',es:'pareja',da:'partner/par',level:'A2',pos:'n.f',ex:'Mi pareja es danesa.' },
+  { id:'w195',es:'novio',da:'kæreste (m)',level:'A2',pos:'n.m',ex:'Mi novio es médico.' },
+  { id:'w196',es:'novia',da:'kæreste (f)',level:'A2',pos:'n.f',ex:'Mi novia trabaja en Madrid.' },
+  { id:'w197',es:'marido',da:'mand/ægtemand',level:'A2',pos:'n.m',ex:'Mi marido trabaja mucho.' },
+  { id:'w198',es:'esposa',da:'kone/hustru',level:'A2',pos:'n.f',ex:'Mi esposa es arquitecta.' },
+  { id:'w199',es:'bebé',da:'baby',level:'A1',pos:'n.m',ex:'El bebé duerme.' },
+  { id:'w200',es:'gemelo',da:'tvilling',level:'A2',pos:'n.m',ex:'Tiene un hermano gemelo.' },
+  { id:'w201',es:'familiar',da:'familiemedlem',level:'A2',pos:'n.m',ex:'Tengo muchos familiares.' },
+  { id:'w202',es:'casado',da:'gift',level:'A2',pos:'adj',ex:'Estoy casado desde hace dos años.' },
+  { id:'w203',es:'soltero',da:'single/ugift',level:'A2',pos:'adj',ex:'Soy soltero.' },
+  { id:'w204',es:'divorciado',da:'skilt',level:'A2',pos:'adj',ex:'Mis padres están divorciados.' },
+  { id:'w205',es:'embarazada',da:'gravid',level:'A2',pos:'adj',ex:'Está embarazada de seis meses.' },
+
+  // ── KROP & SUNDHED ────────────────────────────────────────
+  { id:'w206',es:'cabeza',da:'hoved',level:'A1',pos:'n.f',ex:'Me duele la cabeza.' },
+  { id:'w207',es:'ojo',da:'øje',level:'A1',pos:'n.m',ex:'Tiene los ojos azules.' },
+  { id:'w208',es:'nariz',da:'næse',level:'A1',pos:'n.f',ex:'Me duele la nariz.' },
+  { id:'w209',es:'boca',da:'mund',level:'A1',pos:'n.f',ex:'Abre la boca.' },
+  { id:'w210',es:'oreja',da:'øre',level:'A1',pos:'n.f',ex:'Me duele la oreja.' },
+  { id:'w211',es:'mano',da:'hånd',level:'A1',pos:'n.f',ex:'Dame la mano.' },
+  { id:'w212',es:'pie',da:'fod',level:'A1',pos:'n.m',ex:'Me duele el pie.' },
+  { id:'w213',es:'brazo',da:'arm',level:'A1',pos:'n.m',ex:'Se rompió el brazo.' },
+  { id:'w214',es:'pierna',da:'ben',level:'A1',pos:'n.f',ex:'Tiene las piernas largas.' },
+  { id:'w215',es:'espalda',da:'ryg',level:'A2',pos:'n.f',ex:'Me duele la espalda.' },
+  { id:'w216',es:'estómago',da:'mave',level:'A2',pos:'n.m',ex:'Me duele el estómago.' },
+  { id:'w217',es:'corazón',da:'hjerte',level:'A2',pos:'n.m',ex:'El corazón late rápido.' },
+  { id:'w218',es:'enfermo',da:'syg',level:'A1',pos:'adj',ex:'Estoy enfermo hoy.' },
+  { id:'w219',es:'sano',da:'rask/sund',level:'A1',pos:'adj',ex:'Lleva una vida sana.' },
+  { id:'w220',es:'médico',da:'læge',level:'A1',pos:'n.m',ex:'El médico dice que estoy bien.' },
+  { id:'w221',es:'hospital',da:'hospital',level:'A1',pos:'n.m',ex:'Fue al hospital.' },
+  { id:'w222',es:'farmacia',da:'apotek',level:'A1',pos:'n.f',ex:'La farmacia está cerrada.' },
+  { id:'w223',es:'medicina',da:'medicin',level:'A2',pos:'n.f',ex:'Tomo la medicina cada día.' },
+  { id:'w224',es:'alergia',da:'allergi',level:'A2',pos:'n.f',ex:'Tengo alergia al polen.' },
+  { id:'w225',es:'fiebre',da:'feber',level:'A2',pos:'n.f',ex:'Tiene fiebre alta.' },
+  { id:'w226',es:'tos',da:'hoste',level:'A2',pos:'n.f',ex:'Tengo mucha tos.' },
+  { id:'w227',es:'cansado',da:'træt',level:'A1',pos:'adj',ex:'Estoy muy cansado.' },
+  { id:'w228',es:'dormir',da:'at sove',level:'A1',pos:'v',ex:'Necesito dormir más.' },
+  { id:'w229',es:'descansar',da:'at hvile',level:'A2',pos:'v',ex:'Voy a descansar un poco.' },
+  { id:'w230',es:'ejercicio',da:'motion/øvelse',level:'A2',pos:'n.m',ex:'Hago ejercicio cada día.' },
+
+  // ── NATUR & VEJR ──────────────────────────────────────────
+  { id:'w231',es:'sol',da:'sol',level:'A1',pos:'n.m',ex:'Hace sol hoy.' },
+  { id:'w232',es:'lluvia',da:'regn',level:'A1',pos:'n.f',ex:'La lluvia es fuerte.' },
+  { id:'w233',es:'nieve',da:'sne',level:'A1',pos:'n.f',ex:'En diciembre hay nieve.' },
+  { id:'w234',es:'viento',da:'vind',level:'A1',pos:'n.m',ex:'Hace mucho viento.' },
+  { id:'w235',es:'nube',da:'sky',level:'A1',pos:'n.f',ex:'El cielo está lleno de nubes.' },
+  { id:'w236',es:'calor',da:'varme',level:'A1',pos:'n.m',ex:'Hace mucho calor hoy.' },
+  { id:'w237',es:'frío',da:'kulde/frost',level:'A1',pos:'n.m',ex:'Hace frío esta mañana.' },
+  { id:'w238',es:'temperatura',da:'temperatur',level:'A2',pos:'n.f',ex:'La temperatura es de 30 grados.' },
+  { id:'w239',es:'mar',da:'hav',level:'A1',pos:'n.m',ex:'El mar está tranquilo.' },
+  { id:'w240',es:'río',da:'flod',level:'A1',pos:'n.m',ex:'El río Tajo pasa por Madrid.' },
+  { id:'w241',es:'árbol',da:'træ',level:'A1',pos:'n.m',ex:'El árbol es muy alto.' },
+  { id:'w242',es:'flor',da:'blomst',level:'A1',pos:'n.f',ex:'Las flores son bonitas.' },
+  { id:'w243',es:'bosque',da:'skov',level:'A2',pos:'n.m',ex:'Hay un bosque cerca.' },
+  { id:'w244',es:'campo',da:'mark/land',level:'A2',pos:'n.m',ex:'Me gusta el campo.' },
+  { id:'w245',es:'tierra',da:'jord/land',level:'A2',pos:'n.f',ex:'La tierra es fértil.' },
+  { id:'w246',es:'cielo',da:'himmel',level:'A1',pos:'n.m',ex:'El cielo está azul.' },
+  { id:'w247',es:'luna',da:'måne',level:'A1',pos:'n.f',ex:'La luna llena es bonita.' },
+  { id:'w248',es:'estrella',da:'stjerne',level:'A1',pos:'n.f',ex:'Las estrellas brillan.' },
+  { id:'w249',es:'isla',da:'ø',level:'A2',pos:'n.f',ex:'Las islas Canarias son bonitas.' },
+  { id:'w250',es:'lago',da:'sø',level:'A2',pos:'n.m',ex:'El lago es profundo.' },
+  { id:'w251',es:'tormenta',da:'storm/uvejr',level:'A2',pos:'n.f',ex:'Viene una tormenta.' },
+  { id:'w252',es:'primavera',da:'forår',level:'A1',pos:'n.f',ex:'La primavera es mi estación favorita.' },
+  { id:'w253',es:'verano',da:'sommer',level:'A1',pos:'n.m',ex:'En verano voy a la playa.' },
+  { id:'w254',es:'otoño',da:'efterår',level:'A1',pos:'n.m',ex:'En otoño caen las hojas.' },
+  { id:'w255',es:'invierno',da:'vinter',level:'A1',pos:'n.m',ex:'El invierno es muy frío.' },
+
+  // ── ARBEJDE & UDDANNELSE ──────────────────────────────────
+  { id:'w256',es:'oficina',da:'kontor',level:'A2',pos:'n.f',ex:'Trabajo en una oficina.' },
+  { id:'w257',es:'jefe',da:'chef/leder',level:'A2',pos:'n.m',ex:'Mi jefe es muy exigente.' },
+  { id:'w258',es:'empleado',da:'medarbejder',level:'A2',pos:'n.m',ex:'Hay cien empleados.' },
+  { id:'w259',es:'sueldo',da:'løn',level:'A2',pos:'n.m',ex:'El sueldo es bueno.' },
+  { id:'w260',es:'contrato',da:'kontrakt',level:'A2',pos:'n.m',ex:'Firmé el contrato ayer.' },
+  { id:'w261',es:'reunión',da:'møde',level:'A2',pos:'n.f',ex:'Tengo una reunión a las diez.' },
+  { id:'w262',es:'proyecto',da:'projekt',level:'A2',pos:'n.m',ex:'El proyecto termina pronto.' },
+  { id:'w263',es:'ordenador',da:'computer',level:'A1',pos:'n.m',ex:'Trabajo con el ordenador.' },
+  { id:'w264',es:'correo',da:'e-mail/post',level:'A2',pos:'n.m',ex:'Te mando un correo.' },
+  { id:'w265',es:'colegio',da:'folkeskole',level:'A1',pos:'n.m',ex:'Los niños van al colegio.' },
+  { id:'w266',es:'universidad',da:'universitet',level:'A1',pos:'n.f',ex:'Estudio en la universidad.' },
+  { id:'w267',es:'clase',da:'klasse/time',level:'A1',pos:'n.f',ex:'La clase empieza a las nueve.' },
+  { id:'w268',es:'examen',da:'eksamen',level:'A2',pos:'n.m',ex:'Tengo un examen mañana.' },
+  { id:'w269',es:'nota',da:'karakter/note',level:'A2',pos:'n.f',ex:'Saqué buena nota.' },
+  { id:'w270',es:'profesor',da:'lærer',level:'A1',pos:'n.m',ex:'El profesor explica bien.' },
+  { id:'w271',es:'alumno',da:'elev',level:'A1',pos:'n.m',ex:'Los alumnos estudian mucho.' },
+  { id:'w272',es:'estudiar',da:'at studere',level:'A1',pos:'v',ex:'Estudio español cada día.' },
+  { id:'w273',es:'aprender',da:'at lære',level:'A1',pos:'v',ex:'Quiero aprender más.' },
+  { id:'w274',es:'enseñar',da:'at undervise',level:'A2',pos:'v',ex:'Enseña matemáticas.' },
+  { id:'w275',es:'deberes',da:'lektier',level:'A2',pos:'n.m.pl',ex:'Hago los deberes por la tarde.' },
+  { id:'w276',es:'carrera',da:'studie/karriere',level:'B1',pos:'n.f',ex:'Estudia la carrera de derecho.' },
+  { id:'w277',es:'beca',da:'stipendium',level:'B1',pos:'n.f',ex:'Recibió una beca.' },
+  { id:'w278',es:'prácticas',da:'praktik',level:'B1',pos:'n.f.pl',ex:'Hago prácticas en una empresa.' },
+  { id:'w279',es:'currículum',da:'CV',level:'B1',pos:'n.m',ex:'Envié mi currículum.' },
+  { id:'w280',es:'entrevista',da:'jobsamtale',level:'B1',pos:'n.f',ex:'Tengo una entrevista mañana.' },
+
+  // ── REJSE & TRANSPORT ─────────────────────────────────────
+  { id:'w281',es:'aeropuerto',da:'lufthavn',level:'A2',pos:'n.m',ex:'El aeropuerto está lejos.' },
+  { id:'w282',es:'vuelo',da:'flyrejse/fly',level:'A2',pos:'n.m',ex:'El vuelo sale a las seis.' },
+  { id:'w283',es:'billete',da:'billet',level:'A2',pos:'n.m',ex:'Compré el billete online.' },
+  { id:'w284',es:'maleta',da:'kuffert',level:'A2',pos:'n.f',ex:'La maleta es muy pesada.' },
+  { id:'w285',es:'pasaporte',da:'pas',level:'A2',pos:'n.m',ex:'No encuentro el pasaporte.' },
+  { id:'w286',es:'aduana',da:'told',level:'B1',pos:'n.f',ex:'Pasé por la aduana.' },
+  { id:'w287',es:'embarque',da:'boarding',level:'B1',pos:'n.m',ex:'La puerta de embarque.' },
+  { id:'w288',es:'retraso',da:'forsinkelse',level:'A2',pos:'n.m',ex:'El tren tiene retraso.' },
+  { id:'w289',es:'andén',da:'perron',level:'A2',pos:'n.m',ex:'El tren sale del andén tres.' },
+  { id:'w290',es:'metro',da:'metro/undergrund',level:'A1',pos:'n.m',ex:'Cojo el metro al trabajo.' },
+  { id:'w291',es:'taxi',da:'taxi',level:'A1',pos:'n.m',ex:'Pedimos un taxi.' },
+  { id:'w292',es:'bicicleta',da:'cykel',level:'A1',pos:'n.f',ex:'Voy en bicicleta al trabajo.' },
+  { id:'w293',es:'moto',da:'motorcykel',level:'A2',pos:'n.f',ex:'Tiene una moto roja.' },
+  { id:'w294',es:'barco',da:'skib/båd',level:'A2',pos:'n.m',ex:'Cruzamos en barco.' },
+  { id:'w295',es:'parada',da:'stoppested',level:'A2',pos:'n.f',ex:'La parada está aquí.' },
+  { id:'w296',es:'mapa',da:'kort',level:'A1',pos:'n.m',ex:'¿Tienes un mapa?' },
+  { id:'w297',es:'dirección',da:'adresse/retning',level:'A2',pos:'n.f',ex:'¿Me das tu dirección?' },
+  { id:'w298',es:'izquierda',da:'venstre',level:'A1',pos:'n.f',ex:'Gira a la izquierda.' },
+  { id:'w299',es:'derecha',da:'højre',level:'A1',pos:'n.f',ex:'A la derecha está el banco.' },
+  { id:'w300',es:'recto',da:'ligeud',level:'A1',pos:'adv',ex:'Sigue todo recto.' },
+  { id:'w301',es:'cruce',da:'vejkryds',level:'A2',pos:'n.m',ex:'Gira en el cruce.' },
+  { id:'w302',es:'semáforo',da:'lyskryds',level:'A2',pos:'n.m',ex:'Para en el semáforo.' },
+  { id:'w303',es:'gasolina',da:'benzin',level:'A2',pos:'n.f',ex:'Necesito gasolina.' },
+  { id:'w304',es:'aparcamiento',da:'parkering',level:'A2',pos:'n.m',ex:'Busco un aparcamiento.' },
+  { id:'w305',es:'viaje',da:'rejse',level:'A1',pos:'n.m',ex:'El viaje fue largo.' },
+
+  // ── HJEM & BOLIG ──────────────────────────────────────────
+  { id:'w306',es:'piso',da:'lejlighed',level:'A1',pos:'n.m',ex:'Vivo en un piso en el centro.' },
+  { id:'w307',es:'apartamento',da:'apartment',level:'A1',pos:'n.m',ex:'El apartamento es pequeño.' },
+  { id:'w308',es:'salón',da:'stue',level:'A1',pos:'n.m',ex:'El salón es grande.' },
+  { id:'w309',es:'dormitorio',da:'soveværelse',level:'A1',pos:'n.m',ex:'El dormitorio tiene dos camas.' },
+  { id:'w310',es:'jardín',da:'have',level:'A2',pos:'n.m',ex:'El jardín es precioso.' },
+  { id:'w311',es:'terraza',da:'terrasse',level:'A2',pos:'n.f',ex:'Desayuno en la terraza.' },
+  { id:'w312',es:'escalera',da:'trappe',level:'A2',pos:'n.f',ex:'El ascensor no funciona.' },
+  { id:'w313',es:'ascensor',da:'elevator',level:'A2',pos:'n.m',ex:'Subimos en ascensor.' },
+  { id:'w314',es:'llave',da:'nøgle',level:'A1',pos:'n.f',ex:'Olvidé la llave en casa.' },
+  { id:'w315',es:'mueble',da:'møbel',level:'A2',pos:'n.m',ex:'Los muebles son modernos.' },
+  { id:'w316',es:'sofá',da:'sofa',level:'A1',pos:'n.m',ex:'Me siento en el sofá.' },
+  { id:'w317',es:'armario',da:'skab',level:'A2',pos:'n.m',ex:'La ropa está en el armario.' },
+  { id:'w318',es:'espejo',da:'spejl',level:'A2',pos:'n.m',ex:'Hay un espejo grande.' },
+  { id:'w319',es:'lámpara',da:'lampe',level:'A2',pos:'n.f',ex:'La lámpara da buena luz.' },
+  { id:'w320',es:'lavadora',da:'vaskemaskine',level:'A2',pos:'n.f',ex:'La lavadora está rota.' },
+  { id:'w321',es:'nevera',da:'køleskab',level:'A2',pos:'n.f',ex:'La nevera está vacía.' },
+  { id:'w322',es:'microondas',da:'mikroovn',level:'A2',pos:'n.m',ex:'Calienta la comida en el microondas.' },
+  { id:'w323',es:'alquiler',da:'husleje',level:'A2',pos:'n.m',ex:'El alquiler es caro.' },
+  { id:'w324',es:'propietario',da:'udlejer/ejer',level:'B1',pos:'n.m',ex:'El propietario es amable.' },
+  { id:'w325',es:'mudarse',da:'at flytte',level:'B1',pos:'v',ex:'Me mudé la semana pasada.' },
+
+  // ── TØJ & SHOPPING ────────────────────────────────────────
+  { id:'w326',es:'ropa',da:'tøj',level:'A1',pos:'n.f',ex:'Me gusta esta ropa.' },
+  { id:'w327',es:'camisa',da:'skjorte',level:'A1',pos:'n.f',ex:'Lleva una camisa azul.' },
+  { id:'w328',es:'camiseta',da:'T-shirt',level:'A1',pos:'n.f',ex:'Quiero esta camiseta.' },
+  { id:'w329',es:'pantalón',da:'bukser',level:'A1',pos:'n.m',ex:'El pantalón es nuevo.' },
+  { id:'w330',es:'falda',da:'nederdel',level:'A1',pos:'n.f',ex:'La falda es de color rojo.' },
+  { id:'w331',es:'vestido',da:'kjole',level:'A1',pos:'n.m',ex:'El vestido es bonito.' },
+  { id:'w332',es:'abrigo',da:'frakke',level:'A1',pos:'n.m',ex:'Necesito un abrigo.' },
+  { id:'w333',es:'chaqueta',da:'jakke',level:'A1',pos:'n.f',ex:'La chaqueta es de cuero.' },
+  { id:'w334',es:'zapato',da:'sko',level:'A1',pos:'n.m',ex:'Estos zapatos son cómodos.' },
+  { id:'w335',es:'zapatilla',da:'sneaker/hjemmesko',level:'A2',pos:'n.f',ex:'Llevo zapatillas de deporte.' },
+  { id:'w336',es:'calcetín',da:'sok',level:'A1',pos:'n.m',ex:'¿Dónde están mis calcetines?' },
+  { id:'w337',es:'gorra',da:'kasket',level:'A2',pos:'n.f',ex:'Lleva una gorra azul.' },
+  { id:'w338',es:'bufanda',da:'tørklæde/halstørklæde',level:'A2',pos:'n.f',ex:'La bufanda es de lana.' },
+  { id:'w339',es:'guante',da:'handske',level:'A2',pos:'n.m',ex:'Perdí un guante.' },
+  { id:'w340',es:'talla',da:'størrelse',level:'A2',pos:'n.f',ex:'¿Qué talla usas?' },
+  { id:'w341',es:'probador',da:'prøverum',level:'A2',pos:'n.m',ex:'¿Dónde está el probador?' },
+  { id:'w342',es:'descuento',da:'rabat',level:'A2',pos:'n.m',ex:'Hay un descuento del veinte por ciento.' },
+  { id:'w343',es:'rebajas',da:'udsalg',level:'A2',pos:'n.f.pl',ex:'Las rebajas empiezan en enero.' },
+  { id:'w344',es:'caja',da:'kasse',level:'A2',pos:'n.f',ex:'Pago en la caja.' },
+  { id:'w345',es:'tarjeta',da:'kort',level:'A2',pos:'n.f',ex:'¿Pago con tarjeta?' },
+
+  // ── FØLELSER & PERSONLIGHED ───────────────────────────────
+  { id:'w346',es:'alegre',da:'glad/lystig',level:'A1',pos:'adj',ex:'Estoy muy alegre hoy.' },
+  { id:'w347',es:'triste',da:'trist/ked af det',level:'A1',pos:'adj',ex:'Estoy triste.' },
+  { id:'w348',es:'enfadado',da:'sur/vred',level:'A2',pos:'adj',ex:'Está enfadado conmigo.' },
+  { id:'w349',es:'nervioso',da:'nervøs',level:'A2',pos:'adj',ex:'Estoy nervioso antes del examen.' },
+  { id:'w350',es:'asustado',da:'bange',level:'A2',pos:'adj',ex:'El niño está asustado.' },
+  { id:'w351',es:'emocionado',da:'begejstret',level:'A2',pos:'adj',ex:'Estoy emocionado por el viaje.' },
+  { id:'w352',es:'orgulloso',da:'stolt',level:'A2',pos:'adj',ex:'Estoy orgulloso de ti.' },
+  { id:'w353',es:'avergonzado',da:'flov/skamfuld',level:'B1',pos:'adj',ex:'Estoy avergonzado.' },
+  { id:'w354',es:'celoso',da:'jaloux',level:'B1',pos:'adj',ex:'Está celoso de su hermano.' },
+  { id:'w355',es:'agotado',da:'udmattet',level:'B1',pos:'adj',ex:'Estoy agotado después del trabajo.' },
+  { id:'w356',es:'amor',da:'kærlighed',level:'A1',pos:'n.m',ex:'El amor es importante.' },
+  { id:'w357',es:'odio',da:'had',level:'A2',pos:'n.m',ex:'El odio no resuelve nada.' },
+  { id:'w358',es:'miedo',da:'frygt/angst',level:'A2',pos:'n.m',ex:'Tengo miedo a las arañas.' },
+  { id:'w359',es:'alegría',da:'glæde',level:'A2',pos:'n.f',ex:'La alegría se nota en su cara.' },
+  { id:'w360',es:'feliz',da:'lykkelig',level:'A1',pos:'adj',ex:'Soy muy feliz.' },
+  { id:'w361',es:'simpático',da:'sød/venlig',level:'A1',pos:'adj',ex:'Es muy simpático.' },
+  { id:'w362',es:'antipático',da:'usympatisk',level:'A2',pos:'adj',ex:'El vecino es antipático.' },
+  { id:'w363',es:'amable',da:'venlig/elskværdig',level:'A2',pos:'adj',ex:'La dependienta es muy amable.' },
+  { id:'w364',es:'inteligente',da:'intelligent',level:'A1',pos:'adj',ex:'Es una persona muy inteligente.' },
+  { id:'w365',es:'trabajador',da:'flittig/arbejdsom',level:'A2',pos:'adj',ex:'Es muy trabajador.' },
+  { id:'w366',es:'perezoso',da:'doven',level:'A2',pos:'adj',ex:'No seas tan perezoso.' },
+  { id:'w367',es:'generoso',da:'generøs',level:'A2',pos:'adj',ex:'Es una persona muy generosa.' },
+  { id:'w368',es:'egoísta',da:'egoistisk',level:'B1',pos:'adj',ex:'No seas egoísta.' },
+  { id:'w369',es:'honesto',da:'ærlig',level:'B1',pos:'adj',ex:'Es una persona honesta.' },
+  { id:'w370',es:'curioso',da:'nysgerrig',level:'A2',pos:'adj',ex:'Los niños son muy curiosos.' },
+
+  // ── SPORT & FRITID ────────────────────────────────────────
+  { id:'w371',es:'fútbol',da:'fodbold',level:'A1',pos:'n.m',ex:'Me encanta el fútbol.' },
+  { id:'w372',es:'natación',da:'svømning',level:'A2',pos:'n.f',ex:'Hago natación los martes.' },
+  { id:'w373',es:'tenis',da:'tennis',level:'A2',pos:'n.m',ex:'Juego al tenis.' },
+  { id:'w374',es:'ciclismo',da:'cykling',level:'A2',pos:'n.m',ex:'Me gusta el ciclismo.' },
+  { id:'w375',es:'correr',da:'at løbe',level:'A1',pos:'v',ex:'Corro cinco kilómetros cada día.' },
+  { id:'w376',es:'nadar',da:'at svømme',level:'A1',pos:'v',ex:'Nado en el mar.' },
+  { id:'w377',es:'jugar',da:'at spille/lege',level:'A1',pos:'v',ex:'Juego al fútbol los domingos.' },
+  { id:'w378',es:'ganar',da:'at vinde',level:'A1',pos:'v',ex:'Ganamos el partido.' },
+  { id:'w379',es:'perder',da:'at tabe',level:'A1',pos:'v',ex:'Perdimos el partido.' },
+  { id:'w380',es:'equipo',da:'hold',level:'A2',pos:'n.m',ex:'El equipo es muy bueno.' },
+  { id:'w381',es:'partido',da:'kamp',level:'A2',pos:'n.m',ex:'El partido empieza a las ocho.' },
+  { id:'w382',es:'entrenamiento',da:'træning',level:'A2',pos:'n.m',ex:'El entrenamiento es duro.' },
+  { id:'w383',es:'música',da:'musik',level:'A1',pos:'n.f',ex:'Me encanta la música.' },
+  { id:'w384',es:'canción',da:'sang',level:'A1',pos:'n.f',ex:'Es mi canción favorita.' },
+  { id:'w385',es:'película',da:'film',level:'A1',pos:'n.f',ex:'Vi una película anoche.' },
+  { id:'w386',es:'serie',da:'serie (tv)',level:'A2',pos:'n.f',ex:'Veo series por la noche.' },
+  { id:'w387',es:'teatro',da:'teater',level:'A2',pos:'n.m',ex:'Vamos al teatro esta noche.' },
+  { id:'w388',es:'museo',da:'museum',level:'A2',pos:'n.m',ex:'El museo abre a las diez.' },
+  { id:'w389',es:'exposición',da:'udstilling',level:'B1',pos:'n.f',ex:'Hay una exposición interesante.' },
+  { id:'w390',es:'concierto',da:'koncert',level:'A2',pos:'n.m',ex:'El concierto fue increíble.' },
+  { id:'w391',es:'leer',da:'at læse',level:'A1',pos:'v',ex:'Leo un libro cada semana.' },
+  { id:'w392',es:'escribir',da:'at skrive',level:'A1',pos:'v',ex:'Escribo en mi diario.' },
+  { id:'w393',es:'dibujar',da:'at tegne',level:'A2',pos:'v',ex:'Me gusta dibujar.' },
+  { id:'w394',es:'pintar',da:'at male',level:'A2',pos:'v',ex:'Pinta cuadros los fines de semana.' },
+  { id:'w395',es:'fotografía',da:'fotografi',level:'A2',pos:'n.f',ex:'La fotografía es mi afición.' },
+
+  // ── TEKNOLOGI & KOMMUNIKATION ─────────────────────────────
+  { id:'w396',es:'móvil',da:'mobiltelefon',level:'A1',pos:'n.m',ex:'¿Dónde está mi móvil?' },
+  { id:'w397',es:'pantalla',da:'skærm',level:'A2',pos:'n.f',ex:'La pantalla está rota.' },
+  { id:'w398',es:'internet',da:'internet',level:'A1',pos:'n.m',ex:'No hay internet aquí.' },
+  { id:'w399',es:'contraseña',da:'adgangskode',level:'A2',pos:'n.f',ex:'Olvidé la contraseña.' },
+  { id:'w400',es:'aplicación',da:'app',level:'A2',pos:'n.f',ex:'Descargué una aplicación.' },
+  { id:'w401',es:'mensaje',da:'besked',level:'A2',pos:'n.m',ex:'Te mando un mensaje.' },
+  { id:'w402',es:'llamar',da:'at ringe',level:'A1',pos:'v',ex:'Voy a llamarte esta tarde.' },
+  { id:'w403',es:'cargar',da:'at oplade',level:'A2',pos:'v',ex:'Tengo que cargar el móvil.' },
+  { id:'w404',es:'descargar',da:'at downloade',level:'A2',pos:'v',ex:'Descarga la aplicación.' },
+  { id:'w405',es:'red social',da:'sociale medier',level:'A2',pos:'n.f',ex:'Paso mucho tiempo en las redes.' },
+
+  // ── BY & STEDER ───────────────────────────────────────────
+  { id:'w406',es:'plaza',da:'plads/torv',level:'A1',pos:'n.f',ex:'La plaza mayor es bonita.' },
+  { id:'w407',es:'iglesia',da:'kirke',level:'A1',pos:'n.f',ex:'La iglesia es antigua.' },
+  { id:'w408',es:'ayuntamiento',da:'rådhus',level:'A2',pos:'n.m',ex:'El ayuntamiento está en el centro.' },
+  { id:'w409',es:'biblioteca',da:'bibliotek',level:'A1',pos:'n.f',ex:'Estudio en la biblioteca.' },
+  { id:'w410',es:'parque',da:'park',level:'A1',pos:'n.m',ex:'Paseo por el parque.' },
+  { id:'w411',es:'estadio',da:'stadion',level:'A2',pos:'n.m',ex:'El estadio tiene capacidad grande.' },
+  { id:'w412',es:'banco',da:'bank',level:'A1',pos:'n.m',ex:'El banco cierra a las dos.' },
+  { id:'w413',es:'correos',da:'posthus',level:'A2',pos:'n.m',ex:'Voy a correos.' },
+  { id:'w414',es:'comisaría',da:'politistation',level:'A2',pos:'n.f',ex:'La comisaría está cerca.' },
+  { id:'w415',es:'embajada',da:'ambassade',level:'B1',pos:'n.f',ex:'Fui a la embajada danesa.' },
+  { id:'w416',es:'barrio',da:'kvarter/bydel',level:'A2',pos:'n.m',ex:'Es un barrio tranquilo.' },
+  { id:'w417',es:'centro',da:'centrum',level:'A1',pos:'n.m',ex:'Vivo en el centro.' },
+  { id:'w418',es:'afueras',da:'udkant/forstæder',level:'B1',pos:'n.f.pl',ex:'Vive en las afueras.' },
+  { id:'w419',es:'pueblo',da:'landsby',level:'A2',pos:'n.m',ex:'Es un pueblo muy pequeño.' },
+  { id:'w420',es:'capital',da:'hovedstad',level:'A1',pos:'n.f',ex:'Madrid es la capital de España.' },
+
+  // ── DYR ───────────────────────────────────────────────────
+  { id:'w421',es:'perro',da:'hund',level:'A1',pos:'n.m',ex:'El perro ladra mucho.' },
+  { id:'w422',es:'gato',da:'kat',level:'A1',pos:'n.m',ex:'Tengo dos gatos.' },
+  { id:'w423',es:'pájaro',da:'fugl',level:'A1',pos:'n.m',ex:'El pájaro canta.' },
+  { id:'w424',es:'pez',da:'fisk (dyr)',level:'A1',pos:'n.m',ex:'Tengo un pez de colores.' },
+  { id:'w425',es:'caballo',da:'hest',level:'A1',pos:'n.m',ex:'El caballo es veloz.' },
+  { id:'w426',es:'vaca',da:'ko',level:'A1',pos:'n.f',ex:'La vaca da leche.' },
+  { id:'w427',es:'cerdo',da:'gris',level:'A1',pos:'n.m',ex:'El cerdo es rosado.' },
+  { id:'w428',es:'pollo',da:'høne/kylling (dyr)',level:'A1',pos:'n.m',ex:'Las gallinas ponen huevos.' },
+  { id:'w429',es:'conejo',da:'kanin',level:'A1',pos:'n.m',ex:'El conejo es muy suave.' },
+  { id:'w430',es:'ratón',da:'mus',level:'A1',pos:'n.m',ex:'Vi un ratón en la cocina.' },
+  { id:'w431',es:'araña',da:'edderkop',level:'A2',pos:'n.f',ex:'Tengo miedo a las arañas.' },
+  { id:'w432',es:'serpiente',da:'slange',level:'A2',pos:'n.f',ex:'La serpiente es peligrosa.' },
+  { id:'w433',es:'lobo',da:'ulv',level:'A2',pos:'n.m',ex:'El lobo vive en el bosque.' },
+  { id:'w434',es:'oso',da:'bjørn',level:'A2',pos:'n.m',ex:'El oso pardo es grande.' },
+  { id:'w435',es:'mono',da:'abe',level:'A2',pos:'n.m',ex:'El mono es juguetón.' },
+
+  // ── FARVER & BESKRIVELSER ─────────────────────────────────
+  { id:'w436',es:'rojo',da:'rød',level:'A1',pos:'adj',ex:'El coche es rojo.' },
+  { id:'w437',es:'azul',da:'blå',level:'A1',pos:'adj',ex:'El cielo es azul.' },
+  { id:'w438',es:'verde',da:'grøn',level:'A1',pos:'adj',ex:'La hierba es verde.' },
+  { id:'w439',es:'amarillo',da:'gul',level:'A1',pos:'adj',ex:'El sol es amarillo.' },
+  { id:'w440',es:'blanco',da:'hvid',level:'A1',pos:'adj',ex:'La nieve es blanca.' },
+  { id:'w441',es:'negro',da:'sort',level:'A1',pos:'adj',ex:'El café es negro.' },
+  { id:'w442',es:'gris',da:'grå',level:'A1',pos:'adj',ex:'El cielo está gris.' },
+  { id:'w443',es:'naranja',da:'orange',level:'A1',pos:'adj',ex:'La naranja es naranja.' },
+  { id:'w444',es:'morado',da:'lilla',level:'A2',pos:'adj',ex:'El vestido es morado.' },
+  { id:'w445',es:'rosa',da:'lyserød',level:'A1',pos:'adj',ex:'Las flores son rosas.' },
+  { id:'w446',es:'alto',da:'høj',level:'A1',pos:'adj',ex:'El edificio es muy alto.' },
+  { id:'w447',es:'bajo',da:'lav/kort',level:'A1',pos:'adj',ex:'La mesa es baja.' },
+  { id:'w448',es:'largo',da:'lang',level:'A1',pos:'adj',ex:'El camino es largo.' },
+  { id:'w449',es:'corto',da:'kort',level:'A1',pos:'adj',ex:'El viaje fue corto.' },
+  { id:'w450',es:'ancho',da:'bred',level:'A2',pos:'adj',ex:'La calle es muy ancha.' },
+  { id:'w451',es:'estrecho',da:'smal',level:'A2',pos:'adj',ex:'El pasillo es estrecho.' },
+  { id:'w452',es:'bonito',da:'pæn/smuk',level:'A1',pos:'adj',ex:'Es un lugar muy bonito.' },
+  { id:'w453',es:'feo',da:'grim',level:'A1',pos:'adj',ex:'El edificio es muy feo.' },
+  { id:'w454',es:'viejo',da:'gammel',level:'A1',pos:'adj',ex:'Es un edificio muy viejo.' },
+  { id:'w455',es:'joven',da:'ung',level:'A1',pos:'adj',ex:'Es una persona muy joven.' },
+  { id:'w456',es:'antiguo',da:'gammel/antik',level:'A2',pos:'adj',ex:'Es una ciudad antigua.' },
+  { id:'w457',es:'moderno',da:'moderne',level:'A2',pos:'adj',ex:'El diseño es muy moderno.' },
+  { id:'w458',es:'limpio',da:'ren',level:'A2',pos:'adj',ex:'La habitación está limpia.' },
+  { id:'w459',es:'sucio',da:'beskidt',level:'A2',pos:'adj',ex:'El suelo está sucio.' },
+  { id:'w460',es:'pesado',da:'tung',level:'A2',pos:'adj',ex:'La maleta es muy pesada.' },
+
+  // ── VIGTIGE VERBER ────────────────────────────────────────
+  { id:'w461',es:'poder',da:'at kunne',level:'A1',pos:'v',ex:'¿Puedes ayudarme?' },
+  { id:'w462',es:'saber',da:'at vide/kunne',level:'A1',pos:'v',ex:'No sé la respuesta.' },
+  { id:'w463',es:'deber',da:'at skulle/burde',level:'A2',pos:'v',ex:'Debes estudiar más.' },
+  { id:'w464',es:'hacer',da:'at gøre/lave',level:'A1',pos:'v',ex:'¿Qué haces?' },
+  { id:'w465',es:'dar',da:'at give',level:'A1',pos:'v',ex:'Dame la mano.' },
+  { id:'w466',es:'decir',da:'at sige',level:'A1',pos:'v',ex:'¿Qué dice?' },
+  { id:'w467',es:'ver',da:'at se',level:'A1',pos:'v',ex:'Veo la televisión.' },
+  { id:'w468',es:'escuchar',da:'at lytte',level:'A1',pos:'v',ex:'Escucha bien.' },
+  { id:'w469',es:'mirar',da:'at se på/kigge',level:'A1',pos:'v',ex:'Mira por la ventana.' },
+  { id:'w470',es:'tocar',da:'at røre/spille',level:'A2',pos:'v',ex:'Toca la guitarra muy bien.' },
+  { id:'w471',es:'llevar',da:'at bære/have på',level:'A2',pos:'v',ex:'Lleva un abrigo rojo.' },
+  { id:'w472',es:'traer',da:'at bringe/medbringe',level:'A2',pos:'v',ex:'¿Puedes traer agua?' },
+  { id:'w473',es:'poner',da:'at sætte/lægge',level:'A2',pos:'v',ex:'Pon la mesa, por favor.' },
+  { id:'w474',es:'sacar',da:'at tage ud/hive',level:'A2',pos:'v',ex:'Saca el dinero del banco.' },
+  { id:'w475',es:'usar',da:'at bruge',level:'A1',pos:'v',ex:'¿Cómo se usa esto?' },
+  { id:'w476',es:'necesitar',da:'at have brug for',level:'A1',pos:'v',ex:'Necesito ayuda.' },
+  { id:'w477',es:'esperar',da:'at vente/håbe',level:'A1',pos:'v',ex:'Espero el autobús.' },
+  { id:'w478',es:'pensar',da:'at tænke/mene',level:'A2',pos:'v',ex:'¿Qué piensas?' },
+  { id:'w479',es:'creer',da:'at tro/mene',level:'A2',pos:'v',ex:'Creo que tienes razón.' },
+  { id:'w480',es:'parecer',da:'at synes/virke',level:'A2',pos:'v',ex:'Me parece interesante.' },
+  { id:'w481',es:'preguntar',da:'at spørge',level:'A2',pos:'v',ex:'Voy a preguntar.' },
+  { id:'w482',es:'contestar',da:'at svare',level:'A2',pos:'v',ex:'No contestó el teléfono.' },
+  { id:'w483',es:'ayudar',da:'at hjælpe',level:'A1',pos:'v',ex:'¿Puedes ayudarme?' },
+  { id:'w484',es:'cambiar',da:'at ændre/skifte',level:'A2',pos:'v',ex:'Quiero cambiar de trabajo.' },
+  { id:'w485',es:'empezar',da:'at begynde/starte',level:'A1',pos:'v',ex:'La clase empieza ahora.' },
+  { id:'w486',es:'terminar',da:'at afslutte/slutte',level:'A1',pos:'v',ex:'¿Cuándo termina?' },
+  { id:'w487',es:'seguir',da:'at følge/fortsætte',level:'A2',pos:'v',ex:'Sigue todo recto.' },
+  { id:'w488',es:'dejar',da:'at efterlade/holde op',level:'A2',pos:'v',ex:'Deja el coche aquí.' },
+  { id:'w489',es:'pasar',da:'at ske/passere',level:'A2',pos:'v',ex:'¿Qué pasa?' },
+  { id:'w490',es:'quedarse',da:'at blive/forblive',level:'A2',pos:'v',ex:'Me quedo en casa.' },
+
+  // ── TID & HVERDAG ─────────────────────────────────────────
+  { id:'w491',es:'lunes',da:'mandag',level:'A1',pos:'n.m',ex:'El lunes tengo clase.' },
+  { id:'w492',es:'martes',da:'tirsdag',level:'A1',pos:'n.m',ex:'Los martes voy al gimnasio.' },
+  { id:'w493',es:'miércoles',da:'onsdag',level:'A1',pos:'n.m',ex:'El miércoles es el peor día.' },
+  { id:'w494',es:'jueves',da:'torsdag',level:'A1',pos:'n.m',ex:'El jueves tengo reunión.' },
+  { id:'w495',es:'viernes',da:'fredag',level:'A1',pos:'n.m',ex:'El viernes salgo pronto.' },
+  { id:'w496',es:'sábado',da:'lørdag',level:'A1',pos:'n.m',ex:'El sábado duermo más.' },
+  { id:'w497',es:'domingo',da:'søndag',level:'A1',pos:'n.m',ex:'El domingo es el día de descanso.' },
+  { id:'w498',es:'enero',da:'januar',level:'A1',pos:'n.m',ex:'Enero es el primer mes.' },
+  { id:'w499',es:'febrero',da:'februar',level:'A1',pos:'n.m',ex:'Febrero tiene veintiocho días.' },
+  { id:'w500',es:'marzo',da:'marts',level:'A1',pos:'n.m',ex:'En marzo empieza la primavera.' },
+  { id:'w501',es:'abril',da:'april',level:'A1',pos:'n.m',ex:'Abril lluvias mil.' },
+  { id:'w502',es:'mayo',da:'maj',level:'A1',pos:'n.m',ex:'En mayo hace buen tiempo.' },
+  { id:'w503',es:'junio',da:'juni',level:'A1',pos:'n.m',ex:'En junio empieza el verano.' },
+  { id:'w504',es:'julio',da:'juli',level:'A1',pos:'n.m',ex:'Julio es el mes más caliente.' },
+  { id:'w505',es:'agosto',da:'august',level:'A1',pos:'n.m',ex:'En agosto vamos de vacaciones.' },
+  { id:'w506',es:'septiembre',da:'september',level:'A1',pos:'n.m',ex:'En septiembre vuelve el colegio.' },
+  { id:'w507',es:'octubre',da:'oktober',level:'A1',pos:'n.m',ex:'Octubre es bonito.' },
+  { id:'w508',es:'noviembre',da:'november',level:'A1',pos:'n.m',ex:'Noviembre es gris.' },
+  { id:'w509',es:'diciembre',da:'december',level:'A1',pos:'n.m',ex:'En diciembre hace frío.' },
+  { id:'w510',es:'cumpleaños',da:'fødselsdag',level:'A1',pos:'n.m',ex:'¡Feliz cumpleaños!' },
+  { id:'w511',es:'vacaciones',da:'ferie',level:'A1',pos:'n.f.pl',ex:'Las vacaciones son en agosto.' },
+  { id:'w512',es:'fin de semana',da:'weekend',level:'A1',pos:'n.m',ex:'El fin de semana descanso.' },
+  { id:'w513',es:'rutina',da:'rutine',level:'A2',pos:'n.f',ex:'Tengo una rutina fija.' },
+  { id:'w514',es:'horario',da:'tidsplan/åbningstider',level:'A2',pos:'n.m',ex:'¿Cuál es el horario?' },
+  { id:'w515',es:'plazo',da:'deadline/frist',level:'B1',pos:'n.m',ex:'El plazo termina mañana.' },
+
+  // ── NYTTIGE UDTRYK & FORBINDERE (B1-B2) ──────────────────
+  { id:'w516',es:'de hecho',da:'faktisk/i virkeligheden',level:'B1',pos:'adv',ex:'De hecho, tienes razón.' },
+  { id:'w517',es:'en cambio',da:'derimod/til gengæld',level:'B1',pos:'adv',ex:'Ella estudia; en cambio, él trabaja.' },
+  { id:'w518',es:'por otro lado',da:'på den anden side',level:'B1',pos:'adv',ex:'Por otro lado, hay ventajas.' },
+  { id:'w519',es:'es decir',da:'det vil sige',level:'B1',pos:'adv',ex:'Es tarde, es decir, debemos irnos.' },
+  { id:'w520',es:'en cuanto a',da:'hvad angår',level:'B1',pos:'prep',ex:'En cuanto a la comida, me encanta.' },
+  { id:'w521',es:'a lo mejor',da:'måske',level:'B1',pos:'adv',ex:'A lo mejor viene mañana.' },
+  { id:'w522',es:'en absoluto',da:'overhovedet ikke',level:'B1',pos:'adv',ex:'No estoy de acuerdo en absoluto.' },
+  { id:'w523',es:'a menudo',da:'ofte',level:'A2',pos:'adv',ex:'A menudo como aquí.' },
+  { id:'w524',es:'de vez en cuando',da:'en gang imellem',level:'A2',pos:'adv',ex:'De vez en cuando salgo a correr.' },
+  { id:'w525',es:'cada vez más',da:'stadig mere',level:'B1',pos:'adv',ex:'Cada vez más gente estudia español.' },
+  { id:'w526',es:'sin duda',da:'uden tvivl',level:'B1',pos:'adv',ex:'Sin duda, es la mejor opción.' },
+  { id:'w527',es:'al fin y al cabo',da:'trods alt/i sidste ende',level:'B2',pos:'adv',ex:'Al fin y al cabo, somos amigos.' },
+  { id:'w528',es:'en definitiva',da:'kort sagt/i bund og grund',level:'B2',pos:'adv',ex:'En definitiva, es un buen plan.' },
+  { id:'w529',es:'sin embargo',da:'ikke desto mindre',level:'B1',pos:'adv',ex:'Me gusta; sin embargo, es caro.' },
+  { id:'w530',es:'no obstante',da:'ikke desto mindre',level:'B2',pos:'adv',ex:'No obstante, seguimos adelante.' },
+
+  // ── SAMFUND & VERDEN (B1-B2) ──────────────────────────────
+  { id:'w531',es:'sociedad',da:'samfund',level:'B1',pos:'n.f',ex:'La sociedad cambia rápido.' },
+  { id:'w532',es:'cultura',da:'kultur',level:'A2',pos:'n.f',ex:'La cultura española es rica.' },
+  { id:'w533',es:'tradición',da:'tradition',level:'A2',pos:'n.f',ex:'Es una tradición importante.' },
+  { id:'w534',es:'costumbre',da:'vane/skik',level:'A2',pos:'n.f',ex:'Es costumbre comer tarde.' },
+  { id:'w535',es:'medio ambiente',da:'miljø',level:'B1',pos:'n.m',ex:'El medio ambiente nos preocupa.' },
+  { id:'w536',es:'cambio climático',da:'klimaforandring',level:'B1',pos:'n.m',ex:'El cambio climático es real.' },
+  { id:'w537',es:'política',da:'politik',level:'B1',pos:'n.f',ex:'No hablo de política.' },
+  { id:'w538',es:'economía',da:'økonomi',level:'B1',pos:'n.f',ex:'La economía crece.' },
+  { id:'w539',es:'desigualdad',da:'ulighed',level:'B2',pos:'n.f',ex:'La desigualdad aumenta.' },
+  { id:'w540',es:'bienestar',da:'velvære/velfærd',level:'B2',pos:'n.m',ex:'El bienestar social importa.' },
+  { id:'w541',es:'ciudadano',da:'borger',level:'B1',pos:'n.m',ex:'Los ciudadanos votan.' },
+  { id:'w542',es:'ley',da:'lov',level:'B1',pos:'n.f',ex:'Hay que respetar la ley.' },
+  { id:'w543',es:'derecho',da:'ret/rettighed',level:'B1',pos:'n.m',ex:'Tenemos derecho a opinar.' },
+  { id:'w544',es:'libertad',da:'frihed',level:'B1',pos:'n.f',ex:'La libertad es fundamental.' },
+  { id:'w545',es:'responsabilidad',da:'ansvar',level:'B1',pos:'n.f',ex:'Es nuestra responsabilidad.' },
+  { id:'w546',es:'oportunidad',da:'mulighed/chance',level:'B1',pos:'n.f',ex:'Es una gran oportunidad.' },
+  { id:'w547',es:'reto',da:'udfordring',level:'B1',pos:'n.m',ex:'Es un gran reto.' },
+  { id:'w548',es:'solución',da:'løsning',level:'B1',pos:'n.f',ex:'Hay que encontrar una solución.' },
+  { id:'w549',es:'problema',da:'problem',level:'A1',pos:'n.m',ex:'Tenemos un problema.' },
+  { id:'w550',es:'consecuencia',da:'konsekvens',level:'B1',pos:'n.f',ex:'Las consecuencias son graves.' },
+  { id:'w551',es:'objetivo',da:'mål/formål',level:'B1',pos:'n.m',ex:'Mi objetivo es hablar bien.' },
+  { id:'w552',es:'resultado',da:'resultat',level:'A2',pos:'n.m',ex:'El resultado fue positivo.' },
+  { id:'w553',es:'proceso',da:'proces',level:'B1',pos:'n.m',ex:'Es un proceso largo.' },
+  { id:'w554',es:'clave',da:'nøgle/afgørende',level:'B1',pos:'adj/n.f',ex:'Es la clave del éxito.' },
+  { id:'w555',es:'éxito',da:'succes',level:'A2',pos:'n.m',ex:'El éxito llega con trabajo.' },
+  { id:'w556',es:'fracaso',da:'fiasko/nederlag',level:'B1',pos:'n.m',ex:'El fracaso enseña.' },
+  { id:'w557',es:'ventaja',da:'fordel',level:'B1',pos:'n.f',ex:'Tiene muchas ventajas.' },
+  { id:'w558',es:'desventaja',da:'ulempe',level:'B1',pos:'n.f',ex:'Hay una desventaja clara.' },
+  { id:'w559',es:'impacto',da:'indvirkning/impact',level:'B1',pos:'n.m',ex:'El impacto fue enorme.' },
+  { id:'w560',es:'tendencia',da:'tendens',level:'B2',pos:'n.f',ex:'Es una tendencia global.' },
 ];
 
 // ══════════════════════════════════════════════════════════
@@ -884,7 +1334,7 @@ const TENSE_NAMES = {
 
 function useAppState() {
   const [profile, setProfileRaw] = React.useState(() => DB.get('profile', {
-    name: 'Laurids', level: 'A1', theme: 'terracotta',
+    name: 'ven', level: 'A1', theme: 'terracotta',
     streak: 0, lastStudied: null, totalXP: 0, studyMinutes: 0,
     showLabels: true,
   }));
@@ -1119,30 +1569,32 @@ function checkAdaptiveLevel(profile, sessionStats) {
 const FeedbackBar = ({ feedback, onAdvance, isLast, t }) => {
   if (!feedback) return null;
   const ok = feedback.ok;
+  const skipped = feedback.skipped;
+  const bg = ok ? '#E8F1E8' : '#FBE9E5';
+  const iconBg = ok ? '#3F8A4E' : '#C8553D';
+  const textColor = ok ? '#3F8A4E' : '#9A2B1F';
+  const btnBg = ok ? '#3F8A4E' : '#C8553D';
   return (
-    <div style={{ padding:'20px 22px 32px', background: ok ? '#E8F1E8' : '#FBE9E5',
+    <div style={{ padding:'20px 22px 32px', background: bg,
       borderTopLeftRadius:24, borderTopRightRadius:24 }}>
       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-        <div style={{ width:40,height:40,borderRadius:'50%',
-          background: ok ? '#3F8A4E' : '#C8553D',
+        <div style={{ width:40,height:40,borderRadius:'50%', background:iconBg,
           display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
           {ok ? <IconCheck size={20} color="#fff" stroke={2.6}/> : <IconX size={20} color="#fff" stroke={2.6}/>}
         </div>
         <div style={{ flex:1 }}>
-          <div style={{ fontFamily:t.serif, fontSize:20, fontStyle:'italic',
-            color: ok ? '#3F8A4E' : '#9A2B1F' }}>
-            {ok ? '¡Perfecto!' : 'Næsten!'}
+          <div style={{ fontFamily:t.serif, fontSize:20, fontStyle:'italic', color:textColor }}>
+            {ok ? '¡Perfecto!' : skipped ? 'Sprunget over' : 'Næsten!'}
           </div>
           {feedback.correctAnswer && !ok && (
             <div style={{ fontFamily:t.sans, fontSize:13, color:'#555', marginTop:2 }}>
-              Rigtigt: <strong>{feedback.correctAnswer}</strong>
+              Svaret var: <strong>{feedback.correctAnswer}</strong>
             </div>
           )}
         </div>
       </div>
       <button onClick={onAdvance} style={{
-        marginTop:14, width:'100%', padding:'14px',
-        background: ok ? '#3F8A4E' : '#C8553D',
+        marginTop:14, width:'100%', padding:'14px', background:btnBg,
         color:'#fff', border:'none', borderRadius:14,
         fontFamily:t.sans, fontSize:15, fontWeight:700, cursor:'pointer',
       }}>
@@ -1345,6 +1797,48 @@ const DictationExercise = ({ q, t, onAnswer, feedback }) => {
   );
 };
 
+const ClozeExercise = ({ q, t, onAnswer, feedback }) => {
+  const [picked, setPicked] = React.useState(null);
+  const parts = q.sentence.split('___');
+  return (
+    <div>
+      <div style={{ background:t.card, border:`1px solid ${t.border}`, borderRadius:20,
+        padding:'24px', marginBottom:16, lineHeight:1.6 }}>
+        <div style={{ fontFamily:t.serif, fontSize:22, color:t.ink, textAlign:'center' }}>
+          {parts[0]}
+          <span style={{ display:'inline-block', minWidth:80, borderBottom:`2px solid ${t.primary}`,
+            textAlign:'center', padding:'0 8px', color:picked!=null?t.primary:'transparent',
+            fontWeight:600 }}>
+            {picked!=null ? q.options[picked].text : '___'}
+          </span>
+          {parts[1]}
+        </div>
+        <div style={{ fontFamily:t.serif, fontStyle:'italic', fontSize:13,
+          color:t.muted, textAlign:'center', marginTop:12 }}>
+          ({q.translation})
+        </div>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+        {q.options.map((o, i) => {
+          const isPicked = picked === i;
+          const showResult = feedback != null && isPicked;
+          return (
+            <button key={i} disabled={!!feedback}
+              onClick={() => { if (!feedback) { setPicked(i); onAnswer(o.ok, o.text, q.answer); }}}
+              style={{ padding:'14px', borderRadius:14, textAlign:'center',
+                background: showResult?(o.ok?'#E8F1E8':'#FBE9E5'):t.card,
+                border:`1.5px solid ${showResult?(o.ok?'#3F8A4E':'#C8553D'):(isPicked?t.primary:t.border)}`,
+                fontFamily:t.serif, fontSize:18, color:t.ink,
+                cursor:feedback?'default':'pointer' }}>
+              {o.text}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const GrammarExercise = ({ q, t, onAnswer, feedback }) => {
   const [picked, setPicked] = React.useState(null);
   return (
@@ -1394,7 +1888,7 @@ function speakSpanish(text) {
 // SECTION 9: SESSION RUNNER (shared for all session types)
 // ══════════════════════════════════════════════════════════
 
-const SessionRunner = ({ questions, t, onComplete, title, subtitle, isDeep = false }) => {
+const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDeep = false }) => {
   const [step, setStep] = React.useState(0);
   const [feedback, setFeedback] = React.useState(null);
   const [hearts, setHearts] = React.useState(isDeep ? null : 3);
@@ -1448,23 +1942,48 @@ const SessionRunner = ({ questions, t, onComplete, title, subtitle, isDeep = fal
     }
   };
 
+  const handleSkip = () => {
+    if (feedback) return;
+    const newResult = { qIdx: step, ok: false, wordId: q.wordId || q.ruleId, quality: 0 };
+    resultsRef.current = [...resultsRef.current, newResult];
+    setResults(resultsRef.current);
+    if (!isDeep && hearts !== null) setHearts(h => Math.max(0, h - 1));
+    setFeedback({ ok: false, correctAnswer: q.answer || q.options?.find(o=>o.ok)?.text || '—', skipped: true });
+  };
+
   const renderQ = () => {
     const props = { q, t, onAnswer: handleAnswer, feedback };
     if (q.type === 'choice' || q.type === 'grammar') return <ChoiceExercise {...props}/>;
     if (q.type === 'conjugation') return <ConjugationExercise {...props}/>;
     if (q.type === 'pair') return <PairExercise {...props}/>;
+    if (q.type === 'cloze') return <ClozeExercise {...props}/>;
     if (q.type === 'dictation') return <DictationExercise {...props}/>;
-    return <div>Ukendt øvelsestype</div>;
+    return <div style={{color:t.muted,padding:20}}>Ukendt øvelsestype: {q.type}</div>;
   };
 
   return (
     <div style={{ height:'100%', background:t.bg, display:'flex', flexDirection:'column', paddingTop:64 }}>
       {/* top bar */}
-      <div style={{ display:'flex', alignItems:'center', gap:12, padding:'4px 18px 14px' }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10, padding:'4px 14px 14px' }}>
+        {/* Exit button */}
+        <button onClick={onExit} style={{ background:'transparent', border:'none',
+          cursor:'pointer', padding:'4px 6px', color:t.muted, flexShrink:0,
+          display:'flex', alignItems:'center' }}>
+          <IconClose size={22}/>
+        </button>
+        {/* Progress bar */}
         <div style={{ flex:1, height:10, background:t.border, borderRadius:999, overflow:'hidden' }}>
           <div style={{ width:`${(step/total)*100}%`, height:'100%',
             background:t.primary, borderRadius:999, transition:'width 0.3s' }}/>
         </div>
+        {/* Skip button */}
+        {!feedback && q.type !== 'pair' && (
+          <button onClick={handleSkip} style={{ background:'transparent', border:`1px solid ${t.border}`,
+            borderRadius:8, cursor:'pointer', padding:'4px 10px', color:t.muted,
+            fontFamily:t.sans, fontSize:12, fontWeight:600, flexShrink:0 }}>
+            Spring over
+          </button>
+        )}
         {!isDeep && hearts !== null && (
           <div style={{ display:'flex', alignItems:'center', gap:4, fontFamily:t.sans,
             color:t.ink, fontWeight:700, fontSize:15, flexShrink:0 }}>
@@ -1473,7 +1992,7 @@ const SessionRunner = ({ questions, t, onComplete, title, subtitle, isDeep = fal
           </div>
         )}
         {isDeep && (
-          <span style={{ fontFamily:t.sans, fontSize:12, color:t.muted }}>
+          <span style={{ fontFamily:t.sans, fontSize:12, color:t.muted, flexShrink:0 }}>
             {step+1}/{total}
           </span>
         )}
@@ -2306,6 +2825,7 @@ function App() {
         title={sessionData?.title}
         isDeep={sessionData?.isDeep}
         onComplete={handleSessionComplete}
+        onExit={() => setScreen('home')}
       />
     );
   } else if (screen === 'complete') {
