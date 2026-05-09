@@ -2322,13 +2322,34 @@ function App() {
   }
 
   const showTab = !['session','complete'].includes(screen);
+  const isMobile = window.innerWidth <= 768;
+
+  if (isMobile) {
+    return (
+      <div style={{ display:'flex', flexDirection:'column', height:'100dvh',
+        background:t.bg, color:t.ink, fontFamily:FONT, position:'relative' }}>
+        {levelUpMsg && (
+          <div style={{ position:'fixed', top:20, left:'50%', transform:'translateX(-50%)',
+            zIndex:9999, background:t.primary, color:'#fff', padding:'12px 20px',
+            borderRadius:14, fontFamily:t.sans, fontSize:14, fontWeight:600,
+            boxShadow:'0 4px 20px rgba(0,0,0,0.2)', whiteSpace:'nowrap' }}
+            onClick={() => setLevelUpMsg(null)}>
+            {levelUpMsg.direction === 'up' ? '⬆️' : '⬇️'} Niveau {levelUpMsg.direction === 'up' ? 'op' : 'ned'}: {levelUpMsg.newLevel}
+          </div>
+        )}
+        <div style={{ flex:1, overflowY:'auto' }}>
+          {body}
+        </div>
+        {showTab && <TabBar t={t} active={screen} go={go}/>}
+      </div>
+    );
+  }
 
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center',
       minHeight:'100vh', background:'#E8E2D8', padding:'40px 20px', fontFamily:FONT }}>
       <IOSDevice width={402} height={874} dark={profile.theme === 'noche'}>
         <div style={{ height:'100%', display:'flex', flexDirection:'column', background:t.bg, color:t.ink }}>
-          {/* Level-up toast */}
           {levelUpMsg && (
             <div style={{ position:'absolute', top:80, left:'50%', transform:'translateX(-50%)',
               zIndex:9999, background:t.primary, color:'#fff', padding:'12px 20px',
