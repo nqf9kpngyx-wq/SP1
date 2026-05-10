@@ -1796,9 +1796,21 @@ const DictationExercise = ({ q, t, onAnswer, feedback }) => {
         placeholder="Skriv det du hørte på spansk..."
         disabled={!!feedback}
         style={{ width:'100%', minHeight:80, padding:16, boxSizing:'border-box',
-          borderRadius:16, border:`1.5px solid ${t.border}`,
+          borderRadius:16, border:`1.5px solid ${feedback ? (feedback.ok ? '#3F8A4E' : '#C8553D') : t.border}`,
           background:t.card, color:t.ink, fontFamily:t.sans, fontSize:17,
           outline:'none', resize:'none', lineHeight:1.4 }} />
+      {feedback && !feedback.ok && (
+        <div style={{ marginTop:10, padding:'12px 16px', borderRadius:12,
+          background:'#FBE9E5', border:'1px solid #C8553D44' }}>
+          <div style={{ fontFamily:t.sans, fontSize:11, color:'#9A2B1F',
+            fontWeight:700, letterSpacing:0.8, textTransform:'uppercase', marginBottom:4 }}>
+            Det rigtige svar
+          </div>
+          <div style={{ fontFamily:t.serif, fontSize:18, color:'#9A2B1F', fontStyle:'italic' }}>
+            {q.target}
+          </div>
+        </div>
+      )}
       {!feedback && (
         <button onClick={submit} disabled={!text.trim()}
           style={{ marginTop:14, width:'100%', padding:14, borderRadius:14,
@@ -1896,7 +1908,8 @@ const TypeSpanishExercise = ({ q, t, onAnswer, feedback }) => {
           background:t.card, color:t.ink, fontFamily:t.serif, fontSize:22,
           outline:'none', textAlign:'center', transition:'border 0.2s' }}
       />
-      {q.ex && !feedback && (
+      {/* example sentence only shown AFTER answering */}
+      {feedback && (
         <div style={{ fontFamily:t.serif, fontStyle:'italic', fontSize:13,
           color:t.muted, textAlign:'center', marginTop:10 }}>{q.ex}</div>
       )}
@@ -2035,13 +2048,13 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
   };
 
   const renderQ = () => {
-    const props = { q, t, onAnswer: handleAnswer, feedback };
+    const props = { q, t, onAnswer: handleAnswer, feedback, key: step };
     if (q.type === 'choice' || q.type === 'grammar') return <ChoiceExercise {...props}/>;
     if (q.type === 'conjugation') return <ConjugationExercise {...props}/>;
-    if (q.type === 'pair') return <PairExercise {...props}/>;
-    if (q.type === 'cloze') return <ClozeExercise {...props}/>;
-    if (q.type === 'dictation') return <DictationExercise {...props}/>;
-    if (q.type === 'typeSpanish') return <TypeSpanishExercise {...props}/>;
+    if (q.type === 'pair') return <PairExercise key={step} {...props}/>;
+    if (q.type === 'cloze') return <ClozeExercise key={step} {...props}/>;
+    if (q.type === 'dictation') return <DictationExercise key={step} {...props}/>;
+    if (q.type === 'typeSpanish') return <TypeSpanishExercise key={step} {...props}/>;
     return <div style={{color:t.muted,padding:20}}>Ukendt øvelsestype: {q.type}</div>;
   };
 
@@ -2350,6 +2363,156 @@ const CompleteScreen = ({ go, theme: t, sessionResult, onReturn }) => {
 };
 
 // ══════════════════════════════════════════════════════════
+// SECTION 11b: GRAMMAR REFERENCE SCREEN
+// ══════════════════════════════════════════════════════════
+
+const TENSE_LABELS = {
+  presente: 'Presente', indefinido: 'Indefinido', imperfecto: 'Imperfecto',
+  futuro: 'Futuro', condicional: 'Condicional', subjuntivo: 'Subjuntivo',
+};
+const TENSE_USAGE = {
+  presente: 'Nutid og vaner: "Hablo español todos los días."',
+  indefinido: 'Afsluttet fortidshandling: "Ayer fui al mercado."',
+  imperfecto: 'Vaner/tilstand i fortid: "De niño comía mucho."',
+  futuro: 'Fremtid: "Mañana hablaré con él."',
+  condicional: 'Hypotetisk/høflig: "Me gustaría un café."',
+  subjuntivo: 'Ønske/tvivl/følelse: "Quiero que vengas."',
+};
+
+const GrammarRefScreen = ({ go, theme: t }) => {
+  const [tab, setTab] = React.useState('rules'); // 'rules' | 'verbs'
+  const [openRule, setOpenRule] = React.useState(null);
+  const [selectedVerb, setSelectedVerb] = React.useState('ser');
+
+  const verbData = VERBS[selectedVerb];
+
+  return (
+    <div style={{ background:t.bg, minHeight:'100%', paddingBottom:40 }}>
+      {/* Header */}
+      <div style={{ padding:'60px 20px 0', position:'sticky', top:0,
+        background:t.bg, zIndex:10, borderBottom:`1px solid ${t.border}` }}>
+        <button onClick={() => go('train')} style={{
+          display:'flex', alignItems:'center', gap:6, border:'none', background:'transparent',
+          cursor:'pointer', color:t.muted, fontFamily:t.sans, fontSize:13, fontWeight:600,
+          padding:'0 0 8px', letterSpacing:0.2 }}>
+          ← Tilbage til træning
+        </button>
+        <h1 style={{ margin:'6px 0 0', fontFamily:t.serif, fontWeight:400,
+          fontSize:32, color:t.ink, lineHeight:1.05, letterSpacing:-0.5 }}>
+          Grammatik<em style={{ fontStyle:'italic', color:t.primary }}> reference</em>
+        </h1>
+        {/* Tabs */}
+        <div style={{ display:'flex', gap:4, marginTop:14, marginBottom:0 }}>
+          {[['rules','Regler'], ['verbs','Konjugation']].map(([id, label]) => (
+            <button key={id} onClick={() => setTab(id)} style={{
+              padding:'8px 18px', borderRadius:'12px 12px 0 0', border:`1px solid ${t.border}`,
+              borderBottom: tab === id ? `2px solid ${t.primary}` : `1px solid ${t.border}`,
+              background: tab === id ? t.card : 'transparent',
+              color: tab === id ? t.primary : t.muted,
+              fontFamily:t.sans, fontSize:13, fontWeight:700, cursor:'pointer',
+              letterSpacing:0.3 }}>{label}</button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding:'20px 16px 0' }}>
+        {tab === 'rules' && (
+          <div>
+            {GRAMMAR_RULES.map(rule => {
+              const isOpen = openRule === rule.id;
+              return (
+                <div key={rule.id} style={{ marginBottom:10 }}>
+                  <button onClick={() => setOpenRule(isOpen ? null : rule.id)} style={{
+                    width:'100%', textAlign:'left', padding:'14px 16px',
+                    background:t.card, border:`1px solid ${isOpen ? t.primary : t.border}`,
+                    borderRadius: isOpen ? '14px 14px 0 0' : 14,
+                    cursor:'pointer', display:'flex', alignItems:'center',
+                    justifyContent:'space-between' }}>
+                    <div>
+                      <span style={{ fontFamily:t.sans, fontSize:10, color:t.muted,
+                        fontWeight:700, letterSpacing:0.8, textTransform:'uppercase',
+                        marginRight:8 }}>{rule.level}</span>
+                      <span style={{ fontFamily:t.serif, fontSize:17, color:t.ink }}>{rule.title}</span>
+                      <div style={{ fontFamily:t.sans, fontSize:12, color:t.muted, marginTop:2 }}>{rule.subtitle}</div>
+                    </div>
+                    <span style={{ color:t.muted, fontSize:16, transform: isOpen ? 'rotate(90deg)' : 'none',
+                      transition:'transform 0.2s' }}>›</span>
+                  </button>
+                  {isOpen && (
+                    <div style={{ background:t.card, border:`1px solid ${t.primary}`,
+                      borderTop:'none', borderRadius:'0 0 14px 14px', padding:'16px 16px 18px' }}>
+                      <p style={{ fontFamily:t.sans, fontSize:14, color:t.ink2,
+                        lineHeight:1.55, margin:'0 0 14px' }}>{rule.explanation}</p>
+                      <div style={{ fontFamily:t.sans, fontSize:11, color:t.muted,
+                        fontWeight:700, letterSpacing:0.8, textTransform:'uppercase', marginBottom:8 }}>
+                        Eksempler
+                      </div>
+                      {rule.examples.map((ex, i) => (
+                        <div key={i} style={{ fontFamily:t.serif, fontStyle:'italic',
+                          fontSize:15, color:t.primary, marginBottom:5, paddingLeft:10,
+                          borderLeft:`2px solid ${t.primary}44` }}>
+                          {ex}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {tab === 'verbs' && (
+          <div>
+            {/* Verb selector */}
+            <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:20 }}>
+              {Object.keys(VERBS).map(v => (
+                <button key={v} onClick={() => setSelectedVerb(v)} style={{
+                  padding:'8px 16px', borderRadius:20, border:`1px solid ${selectedVerb===v ? t.primary : t.border}`,
+                  background: selectedVerb===v ? t.primary : t.card,
+                  color: selectedVerb===v ? '#fff' : t.ink2,
+                  fontFamily:t.sans, fontSize:14, fontWeight:600, cursor:'pointer',
+                  fontStyle:'italic' }}>{v}</button>
+              ))}
+            </div>
+
+            {/* Conjugation table */}
+            {verbData && Object.entries(verbData).map(([tense, forms]) => (
+              <div key={tense} style={{ marginBottom:16, borderRadius:16, overflow:'hidden',
+                border:`1px solid ${t.border}` }}>
+                {/* Tense header */}
+                <div style={{ background:t.ink, padding:'10px 16px',
+                  display:'flex', justifyContent:'space-between', alignItems:'baseline' }}>
+                  <span style={{ fontFamily:t.serif, fontSize:16, fontStyle:'italic',
+                    color:t.bg, letterSpacing:-0.2 }}>{TENSE_LABELS[tense] || tense}</span>
+                  <span style={{ fontFamily:t.sans, fontSize:11, color:'rgba(255,255,255,0.5)',
+                    maxWidth:180, textAlign:'right', lineHeight:1.3 }}>{TENSE_USAGE[tense]}</span>
+                </div>
+                {/* Persons grid */}
+                <div style={{ background:t.card }}>
+                  {SUBJECTS.map((subj, i) => (
+                    <div key={subj} style={{
+                      display:'flex', justifyContent:'space-between', alignItems:'center',
+                      padding:'10px 16px',
+                      borderBottom: i < 5 ? `1px solid ${t.border}` : 'none',
+                      background: i % 2 === 0 ? t.card : t.bg }}>
+                      <span style={{ fontFamily:t.sans, fontSize:13, color:t.muted,
+                        fontWeight:600, minWidth:80 }}>{subj}</span>
+                      <span style={{ fontFamily:t.serif, fontSize:17, color:t.ink,
+                        fontStyle:'italic', fontWeight:500 }}>{forms[i]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ══════════════════════════════════════════════════════════
 // SECTION 12: TRAIN SCREEN (Deep training)
 // ══════════════════════════════════════════════════════════
 
@@ -2358,6 +2521,19 @@ const TrainScreen = ({ go, theme: t, appState, onStartDeep }) => {
   const categories = DEEP_MODES.map(m => ({ ...m, icon: m.icon }));
   const [selectedVerb, setSelectedVerb] = React.useState('ser');
   const [selectedTense, setSelectedTense] = React.useState('presente');
+  // Pick a random featured mode on mount, rotating daily
+  const [featuredMode] = React.useState(() => {
+    const dayIndex = Math.floor(Date.now() / 86400000) % DEEP_MODES.length;
+    return DEEP_MODES[dayIndex];
+  });
+
+  const startFeatured = () => {
+    if (featuredMode.id === 'dm_verbs') {
+      onStartDeep('verbs', { verb: selectedVerb, tense: selectedTense });
+    } else {
+      onStartDeep(featuredMode.id, {});
+    }
+  };
 
   return (
     <div style={{ background:t.bg, paddingBottom:20 }}>
@@ -2374,31 +2550,36 @@ const TrainScreen = ({ go, theme: t, appState, onStartDeep }) => {
         </p>
       </div>
 
-      {/* Featured: verb drill */}
+      {/* Featured: rotates daily */}
       <div style={{ margin:'24px 16px 0', background:t.ink, borderRadius:26, padding:'22px', position:'relative', overflow:'hidden' }}>
         <div style={{ position:'absolute', right:-30, top:-30, width:180, height:180,
-          borderRadius:'50%', background:t.primary, opacity:0.18 }}/>
+          borderRadius:'50%', background:featuredMode.color || t.primary, opacity:0.22 }}/>
         <div style={{ position:'relative', zIndex:1 }}>
           <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:14 }}>
             <span style={{ display:'inline-block', padding:'3px 10px', background:t.accent,
               color:t.ink, borderRadius:999, fontFamily:t.sans, fontSize:11,
-              fontWeight:700, letterSpacing:0.6, textTransform:'uppercase' }}>Anbefalet</span>
+              fontWeight:700, letterSpacing:0.6, textTransform:'uppercase' }}>Anbefalet i dag</span>
+            <span style={{ fontSize:20 }}>{featuredMode.icon}</span>
           </div>
           <div style={{ fontFamily:t.serif, fontSize:26, fontStyle:'italic',
-            color:t.bg, letterSpacing:-0.3, lineHeight:1.1 }}>Verbumsdrill</div>
-          <div style={{ display:'flex', gap:8, marginTop:12, flexWrap:'wrap' }}>
-            <select value={selectedVerb} onChange={e=>setSelectedVerb(e.target.value)}
-              style={{ fontFamily:t.sans, fontSize:13, padding:'6px 10px', borderRadius:8,
-                border:'none', background:'rgba(255,255,255,0.15)', color:t.bg, cursor:'pointer' }}>
-              {Object.keys(VERBS).map(v => <option key={v} value={v}>{v}</option>)}
-            </select>
-            <select value={selectedTense} onChange={e=>setSelectedTense(e.target.value)}
-              style={{ fontFamily:t.sans, fontSize:13, padding:'6px 10px', borderRadius:8,
-                border:'none', background:'rgba(255,255,255,0.15)', color:t.bg, cursor:'pointer' }}>
-              {Object.entries(TENSE_NAMES).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
-            </select>
-          </div>
-          <button onClick={() => onStartDeep('verbs', { verb: selectedVerb, tense: selectedTense })}
+            color:t.bg, letterSpacing:-0.3, lineHeight:1.1 }}>{featuredMode.title}</div>
+          <div style={{ fontFamily:t.sans, fontSize:13, color:'rgba(255,255,255,0.65)',
+            marginTop:6, lineHeight:1.4, maxWidth:260 }}>{featuredMode.description}</div>
+          {featuredMode.id === 'dm_verbs' && (
+            <div style={{ display:'flex', gap:8, marginTop:12, flexWrap:'wrap' }}>
+              <select value={selectedVerb} onChange={e=>setSelectedVerb(e.target.value)}
+                style={{ fontFamily:t.sans, fontSize:13, padding:'6px 10px', borderRadius:8,
+                  border:'none', background:'rgba(255,255,255,0.15)', color:t.bg, cursor:'pointer' }}>
+                {Object.keys(VERBS).map(v => <option key={v} value={v}>{v}</option>)}
+              </select>
+              <select value={selectedTense} onChange={e=>setSelectedTense(e.target.value)}
+                style={{ fontFamily:t.sans, fontSize:13, padding:'6px 10px', borderRadius:8,
+                  border:'none', background:'rgba(255,255,255,0.15)', color:t.bg, cursor:'pointer' }}>
+                {Object.entries(TENSE_NAMES).map(([k,v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </div>
+          )}
+          <button onClick={startFeatured}
             style={{ marginTop:16, padding:'12px 20px', borderRadius:12,
               background:t.primary, color:'#fff', border:'none', cursor:'pointer',
               fontFamily:t.sans, fontSize:14, fontWeight:700 }}>
@@ -2407,8 +2588,26 @@ const TrainScreen = ({ go, theme: t, appState, onStartDeep }) => {
         </div>
       </div>
 
+      {/* Grammar reference shortcut */}
+      <div style={{ margin:'16px 16px 0' }}>
+        <button onClick={() => go('grammarRef')} style={{
+          width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+          padding:'14px 18px', borderRadius:18, border:`1.5px solid ${t.border}`,
+          background:t.card, cursor:'pointer', textAlign:'left' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+            <div style={{ width:40, height:40, borderRadius:10, background:'#7B9E8922',
+              display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>📚</div>
+            <div>
+              <div style={{ fontFamily:t.sans, fontSize:14, fontWeight:700, color:t.ink }}>Grammatikreference</div>
+              <div style={{ fontFamily:t.sans, fontSize:12, color:t.muted, marginTop:2 }}>Konjugatorer, regler & eksempler</div>
+            </div>
+          </div>
+          <IconChevron size={18} color={t.muted}/>
+        </button>
+      </div>
+
       {/* Discipline grid */}
-      <div style={{ padding:'28px 16px 0' }}>
+      <div style={{ padding:'20px 16px 0' }}>
         <div style={{ fontFamily:t.sans, fontSize:11, letterSpacing:1.2,
           textTransform:'uppercase', color:t.muted, fontWeight:700, padding:'0 6px 12px' }}>
           Discipliner
@@ -2919,13 +3118,15 @@ function App() {
     );
   } else if (screen === 'train') {
     body = <TrainScreen go={go} theme={t} appState={appState} onStartDeep={startDeep}/>;
+  } else if (screen === 'grammarRef') {
+    body = <GrammarRefScreen go={go} theme={t}/>;
   } else if (screen === 'words') {
     body = <WordsScreen go={go} theme={t} appState={appState}/>;
   } else if (screen === 'profile') {
     body = <ProfileScreen go={go} theme={t} appState={appState}/>;
   }
 
-  const showTab = !['session','complete'].includes(screen);
+  const showTab = !['session','complete','grammarRef'].includes(screen);
   const isMobile = window.innerWidth <= 768;
 
   if (isMobile) {
