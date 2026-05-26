@@ -433,6 +433,7 @@ Object.assign(window, {
 const DB = {
   get: (key, def = null) => { try { const v = localStorage.getItem(key); return v == null ? def : JSON.parse(v); } catch { return def; } },
   set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} },
+  remove: (key) => { try { localStorage.removeItem(key); } catch {} },
 };
 
 function sm2(card, quality) {
@@ -1444,7 +1445,7 @@ function makeVocabQuestion(word, allWords, direction = 'es→da') {
       options: options.map(o => ({ text: o, ok: o === word.da })) };
   } else {
     const options = shuffle([word.es, ...distractors.map(w => w.es)]);
-    return { type: 'choice', wordId: word.id, prompt: word.da, promptSub: word.ex,
+    return { type: 'choice', wordId: word.id, prompt: word.da, promptSub: null, ex: word.ex,
       options: options.map(o => ({ text: o, ok: o === word.es })) };
   }
 }
@@ -1491,6 +1492,77 @@ function makeTypeSpanishQuestion(word) {
   return { type: 'typeSpanish', wordId: word.id, prompt: word.da, answer: word.es,
     hint: word.pos, ex: word.ex };
 }
+
+// ── Reading stories ──────────────────────────────────────
+const STORIES = [
+  {
+    id: 'story_madrid', title: 'Un día en Madrid', level: 'A1',
+    text: 'Carlos vive en Madrid. Todos los días se despierta a las ocho. Primero, come un desayuno con café y tostadas. Después va al trabajo en metro. Carlos trabaja en una oficina cerca del centro. A mediodía come con sus compañeros en un restaurante pequeño. Por la tarde compra frutas y verduras en el mercado. Por la noche ve la televisión y lee un libro. Carlos está muy contento con su vida en Madrid.',
+    questions: [
+      { prompt:'¿Dónde vive Carlos?', answer:'En Madrid', options:['En Madrid','En Barcelona','En Valencia','En Sevilla'] },
+      { prompt:'¿A qué hora se despierta Carlos?', answer:'A las ocho', options:['A las ocho','A las siete','A las nueve','A las diez'] },
+      { prompt:'¿Qué come Carlos en el desayuno?', answer:'Café y tostadas', options:['Café y tostadas','Leche y cereales','Zumo y pan','Fruta y yogur'] },
+      { prompt:'¿Cómo va Carlos al trabajo?', answer:'En metro', options:['En metro','En autobús','En coche','A pie'] },
+      { prompt:'¿Dónde trabaja Carlos?', answer:'En una oficina', options:['En una oficina','En un hospital','En una tienda','En un colegio'] },
+      { prompt:'¿Qué compra Carlos en el mercado?', answer:'Frutas y verduras', options:['Frutas y verduras','Ropa y zapatos','Libros y revistas','Carne y pescado'] },
+      { prompt:'¿Cómo se siente Carlos con su vida?', answer:'Muy contento', options:['Muy contento','Un poco triste','Bastante aburrido','Muy cansado'] },
+    ],
+  },
+  {
+    id: 'story_tienda', title: 'En la tienda', level: 'A1',
+    text: 'Ana quiere comprar ropa nueva. Va a una tienda en el centro de la ciudad. La dependienta le pregunta: "¿Puedo ayudarle?" Ana dice: "Busco una falda azul, talla 38." La dependienta le muestra tres faldas. Ana prueba la primera falda, pero es demasiado grande. La segunda falda es perfecta. Ana también compra una blusa blanca. En total paga cuarenta euros. Ana sale de la tienda muy contenta.',
+    questions: [
+      { prompt:'¿Qué quiere comprar Ana?', answer:'Ropa nueva', options:['Ropa nueva','Comida','Libros','Zapatos'] },
+      { prompt:'¿Qué tipo de falda busca Ana?', answer:'Una falda azul', options:['Una falda azul','Una falda roja','Una falda verde','Una falda negra'] },
+      { prompt:'¿Cuál es la talla de Ana?', answer:'38', options:['38','36','40','42'] },
+      { prompt:'¿Por qué no compra la primera falda?', answer:'Es demasiado grande', options:['Es demasiado grande','Es demasiado pequeña','Es demasiado cara','No le gusta el color'] },
+      { prompt:'¿Qué más compra Ana además de la falda?', answer:'Una blusa blanca', options:['Una blusa blanca','Un abrigo negro','Unos pantalones','Una bufanda'] },
+      { prompt:'¿Cuánto paga Ana en total?', answer:'Cuarenta euros', options:['Cuarenta euros','Treinta euros','Cincuenta euros','Veinte euros'] },
+      { prompt:'¿Cómo sale Ana de la tienda?', answer:'Muy contenta', options:['Muy contenta','Bastante enfadada','Un poco triste','Muy cansada'] },
+    ],
+  },
+  {
+    id: 'story_familia', title: 'La familia García', level: 'A2',
+    text: 'La familia García vive en Barcelona. El padre, Antonio, es médico y trabaja en un hospital. La madre, Carmen, es profesora de inglés en un colegio. Tienen tres hijos: Pablo, que tiene 15 años; Sofía, que tiene 12 años; y el pequeño Javier, que tiene 7 años. Los fines de semana, toda la familia va a la playa o visita a los abuelos. Los abuelos viven en un pueblo pequeño cerca de Barcelona. A Carmen le encanta cocinar paella los domingos.',
+    questions: [
+      { prompt:'¿Dónde vive la familia García?', answer:'En Barcelona', options:['En Barcelona','En Madrid','En Sevilla','En Valencia'] },
+      { prompt:'¿Cuál es la profesión de Antonio?', answer:'Médico', options:['Médico','Profesor','Ingeniero','Abogado'] },
+      { prompt:'¿Dónde trabaja Carmen?', answer:'En un colegio', options:['En un colegio','En un hospital','En una empresa','En una universidad'] },
+      { prompt:'¿Cuántos hijos tienen Antonio y Carmen?', answer:'Tres', options:['Tres','Dos','Cuatro','Uno'] },
+      { prompt:'¿Cuántos años tiene Sofía?', answer:'12 años', options:['12 años','15 años','7 años','10 años'] },
+      { prompt:'¿Dónde viven los abuelos?', answer:'En un pueblo cerca de Barcelona', options:['En un pueblo cerca de Barcelona','En Madrid','En el centro de Barcelona','En Francia'] },
+      { prompt:'¿Qué cocina Carmen los domingos?', answer:'Paella', options:['Paella','Tortilla española','Gazpacho','Cocido madrileño'] },
+    ],
+  },
+  {
+    id: 'story_tren', title: 'El viaje en tren', level: 'A2',
+    text: 'Miguel tiene que viajar de Valencia a Sevilla para una reunión de trabajo. Compra el billete online y elige un asiento junto a la ventana. El tren sale a las nueve de la mañana. Durante el viaje Miguel trabaja en su ordenador y escucha música. Al mediodía va al vagón restaurante y pide un sándwich y una cerveza. El paisaje es muy bonito: campos de naranjos, montañas y pequeños pueblos blancos. El tren llega a Sevilla con quince minutos de retraso. Miguel toma un taxi al hotel y llega justo a tiempo para la reunión.',
+    questions: [
+      { prompt:'¿De qué ciudad sale Miguel?', answer:'De Valencia', options:['De Valencia','De Madrid','De Barcelona','De Málaga'] },
+      { prompt:'¿Para qué viaja Miguel a Sevilla?', answer:'Para una reunión de trabajo', options:['Para una reunión de trabajo','Para ver a su familia','Para ir de vacaciones','Para estudiar'] },
+      { prompt:'¿Cómo compra Miguel el billete?', answer:'Online', options:['Online','En la estación','Por teléfono','En una agencia'] },
+      { prompt:'¿Qué tipo de asiento elige Miguel?', answer:'Junto a la ventana', options:['Junto a la ventana','En el pasillo','En el vagón restaurante','En primera clase'] },
+      { prompt:'¿Qué pide Miguel en el vagón restaurante?', answer:'Un sándwich y una cerveza', options:['Un sándwich y una cerveza','Una paella y un vino','Un bocadillo y agua','Tortilla y café'] },
+      { prompt:'¿Con cuántos minutos de retraso llega el tren?', answer:'Quince minutos', options:['Quince minutos','Media hora','Cinco minutos','Una hora'] },
+      { prompt:'¿Cómo llega Miguel al hotel desde la estación?', answer:'En taxi', options:['En taxi','En metro','A pie','En autobús'] },
+      { prompt:'¿Llega Miguel a tiempo para la reunión?', answer:'Sí, justo a tiempo', options:['Sí, justo a tiempo','No, llega tarde','Sí, con mucho tiempo','No, cancela la reunión'] },
+    ],
+  },
+  {
+    id: 'story_sueno', title: 'El sueño de Elena', level: 'B1',
+    text: 'Elena siempre ha soñado con vivir en el extranjero. Desde pequeña estudió idiomas y viajó con su familia a diferentes países. Después de terminar sus estudios de arquitectura, decidió solicitar un trabajo en una empresa en Lisboa. Aunque tenía miedo de dejar a su familia en Madrid, pensó que era una oportunidad única. Al llegar a Lisboa, encontró un piso pequeño pero acogedor cerca del río Tajo. Al principio echaba de menos a su familia, pero poco a poco fue conociendo gente nueva. Ahora, después de dos años, Elena habla portugués con fluidez y se siente completamente como en casa.',
+    questions: [
+      { prompt:'¿Qué estudió Elena en la universidad?', answer:'Arquitectura', options:['Arquitectura','Idiomas','Medicina','Economía'] },
+      { prompt:'¿En qué ciudad encontró trabajo Elena?', answer:'En Lisboa', options:['En Lisboa','En París','En Londres','En Berlín'] },
+      { prompt:'¿Qué sentía Elena antes de irse?', answer:'Miedo de dejar a su familia', options:['Miedo de dejar a su familia','Mucha ilusión sin preocupaciones','Ganas de no volver','Indiferencia'] },
+      { prompt:'¿Dónde está el piso de Elena en Lisboa?', answer:'Cerca del río Tajo', options:['Cerca del río Tajo','En el centro histórico','Cerca del aeropuerto','En las afueras'] },
+      { prompt:'¿Qué echaba de menos Elena al principio?', answer:'A su familia', options:['A su familia','La comida española','Su trabajo anterior','El clima de Madrid'] },
+      { prompt:'¿Cuánto tiempo lleva Elena en Lisboa?', answer:'Dos años', options:['Dos años','Un año','Tres años','Seis meses'] },
+      { prompt:'¿Qué idioma habla Elena ahora con fluidez?', answer:'Portugués', options:['Portugués','Inglés','Francés','Italiano'] },
+      { prompt:'¿Cómo se siente Elena ahora en Lisboa?', answer:'Como en casa', options:['Como en casa','Todavía extraña','Lista para volver','Sola y triste'] },
+    ],
+  },
+];
 
 function generateWarmupSession(wordProgress, allWords) {
   const today = todayStr();
@@ -1552,6 +1624,58 @@ function generateGrammarSession(rule) {
     answer: ex.answer,
     options: ex.options.map(o => ({ text: o, ok: o === ex.answer })),
     explanation: rule.explanation,
+  }));
+}
+
+function generateListenSession(allWords) {
+  const easy = pickRandom(allWords.filter(w => w.level === 'A1' || w.level === 'A2'), 10);
+  const medium = pickRandom(allWords.filter(w => w.level === 'A2' || w.level === 'B1'), 5);
+  const questions = [];
+  easy.forEach(w => questions.push(makeDictationQuestion(w)));
+  medium.forEach(w => questions.push(makeVocabQuestion(w, allWords, 'es→da')));
+  return shuffle(questions);
+}
+
+function generateVocabDeepSession(allWords, wordProgress) {
+  const due = getDueCards(allWords, wordProgress);
+  const pool = pickRandom(due.length >= 12 ? due : allWords.slice(0, 80), 16);
+  const q = [];
+  q.push(makePairQuestion(pickRandom(pool, 4)));
+  pickRandom(pool, 4).forEach(w => q.push(makeVocabQuestion(w, allWords, 'es→da')));
+  pickRandom(pool, 4).forEach(w => q.push(makeVocabQuestion(w, allWords, 'da→es')));
+  pickRandom(pool, 4).forEach(w => q.push(makeTypeSpanishQuestion(w)));
+  pickRandom(pool, 3).forEach(w => q.push(makeClozeQuestion(w)));
+  return shuffle(q);
+}
+
+function generateDictDeepSession(allWords) {
+  const easy = pickRandom(allWords.filter(w => w.level === 'A1' || w.level === 'A2'), 10);
+  const hard = pickRandom(allWords.filter(w => w.level === 'B1' || w.level === 'B2'), 5);
+  return shuffle([
+    ...easy.map(w => makeDictationQuestion(w)),
+    ...hard.map(w => makeTypeSpanishQuestion(w)),
+  ]);
+}
+
+function generateGramDeepSession(allWords) {
+  const rules = pickRandom(GRAMMAR_RULES, 4);
+  const q = [];
+  rules.forEach(rule => generateGrammarSession(rule).forEach(ex => q.push(ex)));
+  pickRandom(allWords.filter(w => w.level === 'A2' || w.level === 'B1'), 6)
+    .forEach(w => q.push(makeClozeQuestion(w)));
+  return shuffle(q);
+}
+
+function generateReadSession(stories) {
+  const story = stories[Math.floor(Math.random() * stories.length)];
+  return story.questions.map(qd => ({
+    type: 'reading',
+    storyId: story.id,
+    storyTitle: story.title,
+    storyText: story.text,
+    prompt: qd.prompt,
+    answer: qd.answer,
+    options: shuffle(qd.options).map(o => ({ text: o, ok: o === qd.answer })),
   }));
 }
 
@@ -1647,6 +1771,10 @@ const ChoiceExercise = ({ q, t, onAnswer, feedback }) => {
           </button>
         );
       })}
+      {feedback && q.ex && (
+        <div style={{ fontFamily:t.serif, fontStyle:'italic', fontSize:13,
+          color:t.muted, textAlign:'center', marginTop:4 }}>{q.ex}</div>
+      )}
     </div>
   );
 };
@@ -1753,14 +1881,22 @@ const DictationExercise = ({ q, t, onAnswer, feedback }) => {
   const [speaking, setSpeaking] = React.useState(false);
 
   const playAudio = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const doSpeak = () => {
       const u = new SpeechSynthesisUtterance(q.target);
-      u.lang = 'es-ES'; u.rate = 0.85;
+      u.lang = 'es-ES'; u.rate = 0.68; u.pitch = 1.05;
+      const v = getBestSpanishVoice();
+      if (v) u.voice = v;
       setSpeaking(true);
       u.onend = () => setSpeaking(false);
       window.speechSynthesis.speak(u);
       setPlays(p => p + 1);
+    };
+    if (window.speechSynthesis.getVoices().length > 0) {
+      doSpeak();
+    } else {
+      window.speechSynthesis.onvoiceschanged = () => { doSpeak(); window.speechSynthesis.onvoiceschanged = null; };
     }
   };
 
@@ -1927,6 +2063,53 @@ const TypeSpanishExercise = ({ q, t, onAnswer, feedback }) => {
   );
 };
 
+const ReadingExercise = ({ q, t, onAnswer, feedback }) => {
+  const [textOpen, setTextOpen] = React.useState(true);
+  const [picked, setPicked] = React.useState(null);
+  return (
+    <div>
+      {/* Story text toggle */}
+      <div style={{ borderRadius:14, border:`1px solid ${t.border}`, marginBottom:14, overflow:'hidden' }}>
+        <button onClick={() => setTextOpen(o => !o)} style={{
+          width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+          padding:'10px 14px', background:t.card, border:'none', cursor:'pointer' }}>
+          <span style={{ fontFamily:t.sans, fontSize:12, fontWeight:700, color:t.muted,
+            letterSpacing:0.6, textTransform:'uppercase' }}>{q.storyTitle}</span>
+          <span style={{ color:t.muted, fontSize:14 }}>{textOpen ? '▲' : '▼ Vis tekst'}</span>
+        </button>
+        {textOpen && (
+          <div style={{ padding:'0 14px 14px', background:t.card,
+            fontFamily:t.sans, fontSize:13, color:t.ink2, lineHeight:1.7 }}>
+            {q.storyText}
+          </div>
+        )}
+      </div>
+      {/* Question */}
+      <div style={{ background:t.card, border:`1px solid ${t.border}`, borderRadius:16,
+        padding:'18px 16px', marginBottom:14, textAlign:'center' }}>
+        <div style={{ fontFamily:t.serif, fontSize:18, color:t.ink, lineHeight:1.4 }}>{q.prompt}</div>
+      </div>
+      {/* Options */}
+      {q.options.map((o, i) => {
+        const isPicked = picked === i;
+        const showResult = feedback != null && isPicked;
+        return (
+          <button key={i} disabled={feedback != null}
+            onClick={() => { if (!feedback) { setPicked(i); onAnswer(o.ok, o.text, q.options.find(x=>x.ok)?.text); }}}
+            style={{ display:'block', width:'100%', textAlign:'left',
+              padding:'14px 16px', marginBottom:10,
+              background: showResult ? (o.ok ? '#E8F1E8' : '#FBE9E5') : t.card,
+              border:`1.5px solid ${showResult ? (o.ok?'#3F8A4E':'#C8553D') : (isPicked?t.primary:t.border)}`,
+              borderRadius:14, fontFamily:t.serif, fontSize:17, color:t.ink,
+              cursor:feedback?'default':'pointer', transition:'all 0.15s' }}>
+            {o.text}
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
 const GrammarExercise = ({ q, t, onAnswer, feedback }) => {
   const [picked, setPicked] = React.useState(null);
   return (
@@ -1963,12 +2146,38 @@ const GrammarExercise = ({ q, t, onAnswer, feedback }) => {
 };
 
 // Speaks a word via Web Speech API
-function speakSpanish(text) {
+function getBestSpanishVoice() {
+  const voices = window.speechSynthesis.getVoices();
+  // Prefer named high-quality voices (macOS/iOS built-in)
+  const preferred = ['Paulina','Monica','Marisol','Jorge','Juan','Diego','Soledad','Mónica'];
+  for (const name of preferred) {
+    const v = voices.find(v => v.name.includes(name));
+    if (v) return v;
+  }
+  return voices.find(v => v.lang === 'es-ES') ||
+         voices.find(v => v.lang === 'es-MX') ||
+         voices.find(v => v.lang.startsWith('es')) ||
+         null;
+}
+
+function speakSpanish(text, rate = 0.72) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'es-ES'; u.rate = 0.9;
-  window.speechSynthesis.speak(u);
+  const doSpeak = () => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'es-ES';
+    u.rate = rate;
+    u.pitch = 1.05;
+    const v = getBestSpanishVoice();
+    if (v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  };
+  // Voices may not be loaded yet on first call
+  if (window.speechSynthesis.getVoices().length > 0) {
+    doSpeak();
+  } else {
+    window.speechSynthesis.onvoiceschanged = () => { doSpeak(); window.speechSynthesis.onvoiceschanged = null; };
+  }
 }
 
 
@@ -1976,13 +2185,34 @@ function speakSpanish(text) {
 // SECTION 9: SESSION RUNNER (shared for all session types)
 // ══════════════════════════════════════════════════════════
 
-const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDeep = false }) => {
-  const [step, setStep] = React.useState(0);
+const DRAFT_KEY = 'draft_session';
+const DRAFT_TTL = 5 * 60 * 1000;
+
+const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDeep = false,
+    sessionType = null, initialStep = 0, initialResults = [] }) => {
+  const [step, setStep] = React.useState(initialStep);
   const [feedback, setFeedback] = React.useState(null);
   const [hearts, setHearts] = React.useState(isDeep ? null : 3);
-  const [results, setResults] = React.useState([]);
-  const resultsRef = React.useRef([]);
+  const [results, setResults] = React.useState(initialResults);
+  const resultsRef = React.useRef(initialResults);
   const startTime = React.useRef(Date.now());
+
+  // Save draft on exit
+  const handleExit = () => {
+    if (sessionType && step > 0) {
+      DB.set(DRAFT_KEY, {
+        savedAt: Date.now(),
+        sessionType,
+        questions,
+        step,
+        results: resultsRef.current,
+        title: title || '',
+        isDeep: !!isDeep,
+        xpPer: 5,
+      });
+    }
+    onExit();
+  };
 
   if (!questions || questions.length === 0) {
     return <div style={{ padding:40, textAlign:'center', color:t.muted }}>Ingen spørgsmål tilgængelige.</div>;
@@ -2029,6 +2259,7 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
   const advance = () => {
     setFeedback(null);
     if (step + 1 >= total) {
+      DB.remove(DRAFT_KEY); // clear draft on completion
       const allResults = resultsRef.current;
       const finalCorrect = allResults.filter(r => r.ok).length;
       const minutes = Math.round((Date.now() - startTime.current) / 60000) || 1;
@@ -2055,6 +2286,7 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
     if (q.type === 'cloze') return <ClozeExercise key={step} {...props}/>;
     if (q.type === 'dictation') return <DictationExercise key={step} {...props}/>;
     if (q.type === 'typeSpanish') return <TypeSpanishExercise key={step} {...props}/>;
+    if (q.type === 'reading') return <ReadingExercise key={step} {...props}/>;
     return <div style={{color:t.muted,padding:20}}>Ukendt øvelsestype: {q.type}</div>;
   };
 
@@ -2063,7 +2295,7 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
       {/* top bar */}
       <div style={{ display:'flex', alignItems:'center', gap:10, padding:'4px 14px 14px' }}>
         {/* Exit button */}
-        <button onClick={onExit} style={{ background:'transparent', border:'none',
+        <button onClick={handleExit} style={{ background:'transparent', border:'none',
           cursor:'pointer', padding:'4px 6px', color:t.muted, flexShrink:0,
           display:'flex', alignItems:'center' }}>
           <IconClose size={22}/>
@@ -2098,13 +2330,14 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
       <div style={{ flex:1, overflow:'auto', padding:'8px 22px 20px' }}>
         <div style={{ fontFamily:t.sans, fontSize:12, letterSpacing:1.4,
           color:t.muted, fontWeight:700, textTransform:'uppercase', marginBottom:4 }}>
-          {subtitle || (q.type === 'conjugation' ? 'Konjugation' : q.type === 'pair' ? 'Match' : q.type === 'dictation' ? 'Diktat' : 'Vokabular')}
+          {subtitle || (q.type === 'conjugation' ? 'Konjugation' : q.type === 'pair' ? 'Match' : q.type === 'dictation' ? 'Diktat' : q.type === 'reading' ? 'Læseforståelse' : 'Vokabular')}
         </div>
         <h2 style={{ margin:'8px 0 22px', fontFamily:t.serif, fontWeight:400,
           fontSize:q.type==='pair'?22:26, color:t.ink, lineHeight:1.2, letterSpacing:-0.3 }}>
           {q.type === 'pair' ? 'Match ord med betydning' :
            q.type === 'dictation' ? 'Lyt og skriv sætningen' :
            q.type === 'conjugation' ? `Bøj "${q.verb}"` :
+           q.type === 'reading' ? 'Besvar spørgsmålet' :
            q.prompt || 'Vælg det korrekte svar'}
         </h2>
         {renderQ()}
@@ -2991,57 +3224,66 @@ function App() {
 
   const go = (s) => setScreen(s);
 
+  // Helper: check for a recent draft and restore it, or run generator
+  const launchSession = (sessionType, generate, isDeep = false) => {
+    const draft = DB.get(DRAFT_KEY);
+    if (draft && draft.sessionType === sessionType &&
+        Date.now() - draft.savedAt < DRAFT_TTL && draft.questions?.length) {
+      DB.remove(DRAFT_KEY);
+      setSessionData({
+        questions: draft.questions, title: draft.title,
+        type: sessionType, xpPer: draft.xpPer || 5,
+        isDeep: draft.isDeep || isDeep,
+        resumeFrom: { step: draft.step, results: draft.results },
+      });
+      setScreen('session');
+      return;
+    }
+    const { questions, title, xpPer } = generate();
+    if (!questions || questions.length === 0) return;
+    setSessionData({ questions, title, type: sessionType, xpPer: xpPer || 5, isDeep });
+    setScreen('session');
+  };
+
   // Start a daily plan step
   const startPlanStep = (stepId) => {
-    let questions, title, xpPer;
-    if (stepId === 'warmup') {
-      questions = generateWarmupSession(wordProgress, WORDS);
-      title = 'Opvarmning';
-      xpPer = 3;
-    } else if (stepId === 'lesson') {
-      questions = generateLessonSession(wordProgress, WORDS, profile);
-      title = 'Nyt ordforråd';
-      xpPer = 6;
-    } else if (stepId === 'dictation') {
-      questions = generateDictationSession(WORDS);
-      title = 'Diktat';
-      xpPer = 8;
-    }
-    if (!questions || questions.length === 0) return;
-    setSessionData({ questions, title, type: stepId, xpPer: xpPer || 5 });
-    setScreen('session');
+    launchSession(stepId, () => {
+      if (stepId === 'warmup') return { questions: generateWarmupSession(wordProgress, WORDS), title: 'Opvarmning', xpPer: 3 };
+      if (stepId === 'lesson') return { questions: generateLessonSession(wordProgress, WORDS, profile), title: 'Nyt ordforråd', xpPer: 6 };
+      if (stepId === 'dictation') return { questions: generateDictationSession(WORDS), title: 'Diktat', xpPer: 8 };
+      return {};
+    });
   };
 
   // Start a deep training session
   const startDeep = (modeId, opts) => {
-    let questions, title;
-    if (modeId === 'verbs' || modeId === 'dm_verbs') {
-      questions = generateDeepVerbSession(opts.verb, opts.tense);
-      title = `${opts.verb} — ${TENSE_NAMES[opts.tense] || opts.tense}`;
-    } else if (modeId === 'grammar' || opts.rule) {
-      const rule = opts.rule || GRAMMAR_RULES[0];
-      questions = generateGrammarSession(rule);
-      title = rule.title;
-    } else if (modeId === 'dm_vocab') {
-      const due = getDueCards(WORDS, wordProgress);
-      const pool = pickRandom(due.length ? due : WORDS.slice(0,20), 10);
-      questions = pool.map(w => makeVocabQuestion(w, WORDS, Math.random()>0.5?'es→da':'da→es'));
-      title = 'Glosehjørnet';
-    } else if (modeId === 'dm_dict') {
-      questions = generateDictationSession(WORDS).concat(generateDictationSession(WORDS));
-      title = 'Lyt og skriv';
-    } else if (modeId === 'dm_gram') {
-      const rule = GRAMMAR_RULES[Math.floor(Math.random() * GRAMMAR_RULES.length)];
-      questions = generateGrammarSession(rule);
-      title = rule.title;
-    } else {
-      const pool = pickRandom(WORDS, 10);
-      questions = pool.map(w => makeVocabQuestion(w, WORDS));
-      title = 'Træning';
-    }
-    if (!questions || questions.length === 0) return;
-    setSessionData({ questions, title, type: 'deep', xpPer: 4, isDeep: true });
-    setScreen('session');
+    launchSession(modeId, () => {
+      if (modeId === 'verbs' || modeId === 'dm_verbs') {
+        return { questions: generateDeepVerbSession(opts.verb, opts.tense),
+          title: `${opts.verb} — ${TENSE_NAMES[opts.tense] || opts.tense}`, xpPer: 5 };
+      }
+      if (modeId === 'grammar' || opts.rule) {
+        const rule = opts.rule || GRAMMAR_RULES[0];
+        return { questions: generateGrammarSession(rule), title: rule.title, xpPer: 5 };
+      }
+      if (modeId === 'dm_vocab') {
+        return { questions: generateVocabDeepSession(WORDS, wordProgress), title: 'Glosehjørnet', xpPer: 4 };
+      }
+      if (modeId === 'dm_dict') {
+        return { questions: generateDictDeepSession(WORDS), title: 'Lyt og skriv', xpPer: 6 };
+      }
+      if (modeId === 'dm_listen') {
+        return { questions: generateListenSession(WORDS), title: 'Øret åbner sig', xpPer: 5 };
+      }
+      if (modeId === 'dm_gram') {
+        return { questions: generateGramDeepSession(WORDS), title: 'Grammatikdybet', xpPer: 5 };
+      }
+      if (modeId === 'dm_read') {
+        return { questions: generateReadSession(STORIES), title: 'Læs en historie', xpPer: 5 };
+      }
+      // fallback
+      return { questions: pickRandom(WORDS, 10).map(w => makeVocabQuestion(w, WORDS)), title: 'Træning', xpPer: 4 };
+    }, true);
   };
 
   const handleSessionComplete = (result) => {
@@ -3107,6 +3349,9 @@ function App() {
         t={t}
         title={sessionData?.title}
         isDeep={sessionData?.isDeep}
+        sessionType={sessionData?.type}
+        initialStep={sessionData?.resumeFrom?.step || 0}
+        initialResults={sessionData?.resumeFrom?.results || []}
         onComplete={handleSessionComplete}
         onExit={() => setScreen('home')}
       />
