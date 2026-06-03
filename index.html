@@ -1793,7 +1793,8 @@ function useAppState() {
   }));
   const [dailyPlan, setDailyPlanRaw] = React.useState(() => {
     const saved = DB.get('dailyPlan', null);
-    if (saved && saved.date === todayStr()) return saved;
+    // Re-build if an older plan still contains the removed dictation step
+    if (saved && saved.date === todayStr() && !saved.steps.some(s => s.id === 'dictation')) return saved;
     return buildDailyPlan();
   });
 
@@ -1862,9 +1863,8 @@ function buildDailyPlan() {
   return {
     date: todayStr(),
     steps: [
-      { id: 'warmup', kind: 'Opvarmning', title: 'Repetér dine ord', meta: '3 min · SM-2 repetition', icon: '〜', state: 'pending', xp: 20 },
-      { id: 'lesson', kind: 'Dagens lektion', title: 'Nyt ordforråd', meta: '8 min · 5 øvelser', icon: '☕', state: 'locked', xp: 40 },
-      { id: 'dictation', kind: 'Lyt og skriv', title: 'Diktat', meta: '4 min · transskription', icon: '♪', state: 'locked', xp: 20 },
+      { id: 'warmup', kind: 'Opvarmning', title: 'Repetér dine ord', meta: '6 min · SM-2 repetition', icon: '〜', state: 'pending', xp: 40 },
+      { id: 'lesson', kind: 'Dagens lektion', title: 'Nyt ordforråd', meta: '16 min · 10 øvelser', icon: '☕', state: 'locked', xp: 80 },
     ],
   };
 }
@@ -2018,7 +2018,7 @@ function generateWarmupSession(wordProgress, allWords) {
     if (!p) return false;
     return p.due <= today;
   });
-  const pool = pickRandom(due.length ? due : allWords.slice(0, 30), Math.min(20, Math.max(16, due.length)));
+  const pool = pickRandom(due.length ? due : allWords.slice(0, 60), Math.min(40, Math.max(32, due.length)));
   return pool.map(w => {
     const r = Math.random();
     if (r < 0.35) return makeVocabQuestion(w, allWords, 'es→da');
@@ -2034,17 +2034,19 @@ function generateLessonSession(wordProgress, allWords, profile) {
   const eligibleLevels = levelOrder.slice(0, levelIdx + 1);
   const eligible = allWords.filter(w => eligibleLevels.includes(w.level));
   const unseen = eligible.filter(w => !wordProgress[w.id]);
-  const pool = unseen.length >= 8 ? pickRandom(unseen, 16) : pickRandom(eligible, 16);
+  const pool = unseen.length >= 16 ? pickRandom(unseen, 32) : pickRandom(eligible, 32);
   const questions = [];
-  // Two pair rounds
+  // Four pair rounds
+  questions.push(makePairQuestion(pickRandom(pool, 4)));
+  questions.push(makePairQuestion(pickRandom(pool, 4)));
   questions.push(makePairQuestion(pickRandom(pool, 4)));
   questions.push(makePairQuestion(pickRandom(pool, 4)));
   // Choice questions
-  pickRandom(pool, 6).forEach(w => questions.push(makeVocabQuestion(w, allWords)));
+  pickRandom(pool, 12).forEach(w => questions.push(makeVocabQuestion(w, allWords)));
   // Type Spanish
-  pickRandom(pool, 4).forEach(w => questions.push(makeTypeSpanishQuestion(w)));
+  pickRandom(pool, 8).forEach(w => questions.push(makeTypeSpanishQuestion(w)));
   // Cloze
-  pickRandom(pool, 3).forEach(w => questions.push(makeClozeQuestion(w)));
+  pickRandom(pool, 6).forEach(w => questions.push(makeClozeQuestion(w)));
   return shuffle(questions);
 }
 
@@ -2824,7 +2826,6 @@ const HomeScreen = ({ go, theme: t, appState }) => {
     if (step.state === 'locked') return;
     if (step.id === 'warmup') go('warmup');
     else if (step.id === 'lesson') go('lesson');
-    else if (step.id === 'dictation') go('dictation');
   };
 
   const steps = dailyPlan.steps;
@@ -2890,7 +2891,7 @@ const HomeScreen = ({ go, theme: t, appState }) => {
         <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between' }}>
           <h2 style={{ margin:0, fontFamily:t.serif, fontSize:22, fontWeight:400,
             color:t.ink, letterSpacing:-0.3 }}>Din rute i dag</h2>
-          <span style={{ fontFamily:t.sans, fontSize:13, color:t.muted }}>3 trin</span>
+          <span style={{ fontFamily:t.sans, fontSize:13, color:t.muted }}>{steps.length} trin</span>
         </div>
       </div>
       <div style={{ padding:'14px 22px 0' }}>
@@ -3595,6 +3596,36 @@ const ProfileScreen = ({ go, theme: t, appState }) => {
         </div>
       </div>
 
+      {/* Color scheme selector */}
+      <div style={{ padding:'20px 16px 0' }}>
+        <div style={{ background:t.card, border:`1px solid ${t.border}`, borderRadius:18, padding:'16px' }}>
+          <div style={{ fontFamily:t.sans, fontSize:11, letterSpacing:1.2,
+            textTransform:'uppercase', color:t.muted, fontWeight:700, marginBottom:10 }}>Farveskema</div>
+          <div style={{ display:'flex', gap:8 }}>
+            {Object.entries(THEMES).map(([key, th]) => {
+              const active = profile.theme === key;
+              return (
+                <button key={key} onClick={() => saveProfile({ theme: key })} style={{
+                  flex:1, padding:'12px 8px', borderRadius:12, cursor:'pointer',
+                  background: active ? t.primary : t.bg,
+                  color: active ? '#fff' : t.ink,
+                  border:`1px solid ${active ? t.primary : t.border}`,
+                  fontFamily:t.sans, fontWeight:700, fontSize:13,
+                  display:'flex', flexDirection:'column', alignItems:'center', gap:8 }}>
+                  <div style={{ display:'flex', gap:3 }}>
+                    {[th.bg, th.primary, th.accent].map((c, i) => (
+                      <span key={i} style={{ width:14, height:14, borderRadius:'50%',
+                        background:c, border:`1px solid ${active ? '#ffffff55' : t.border}` }}/>
+                    ))}
+                  </div>
+                  {th.name}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
       {/* Achievements */}
       <div style={{ padding:'20px 22px 0' }}>
         <div style={{ fontFamily:t.sans, fontSize:11, letterSpacing:1.2,
@@ -3697,7 +3728,6 @@ function App() {
     launchSession(stepId, () => {
       if (stepId === 'warmup') return { questions: generateWarmupSession(wordProgress, WORDS), title: 'Opvarmning', xpPer: 3 };
       if (stepId === 'lesson') return { questions: generateLessonSession(wordProgress, WORDS, profile), title: 'Nyt ordforråd', xpPer: 6 };
-      if (stepId === 'dictation') return { questions: generateDictationSession(WORDS), title: 'Diktat', xpPer: 8 };
       return {};
     });
   };
@@ -3749,7 +3779,7 @@ function App() {
     if (Object.keys(wpUpdates).length) saveWordProgress(wpUpdates);
 
     // Update plan steps
-    if (['warmup','lesson','dictation'].includes(sessionData.type)) {
+    if (['warmup','lesson'].includes(sessionData.type)) {
       const steps = dailyPlan.steps.map(s => {
         if (s.id === sessionData.type) return { ...s, state: 'done' };
         // Unlock next step
@@ -3782,7 +3812,6 @@ function App() {
   const goRoute = (dest) => {
     if (dest === 'warmup') { startPlanStep('warmup'); return; }
     if (dest === 'lesson') { startPlanStep('lesson'); return; }
-    if (dest === 'dictation') { startPlanStep('dictation'); return; }
     setScreen(dest);
   };
 
