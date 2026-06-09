@@ -2021,8 +2021,8 @@ function generateWarmupSession(wordProgress, allWords) {
   const pool = pickRandom(due.length ? due : allWords.slice(0, 60), Math.min(40, Math.max(32, due.length)));
   return pool.map(w => {
     const r = Math.random();
-    if (r < 0.35) return makeVocabQuestion(w, allWords, 'es→da');
-    if (r < 0.70) return makeVocabQuestion(w, allWords, 'da→es');
+    if (r < 0.30) return makeVocabQuestion(w, allWords, 'es→da');
+    if (r < 0.60) return makeVocabQuestion(w, allWords, 'da→es');
     return makeTypeSpanishQuestion(w);
   });
 }
