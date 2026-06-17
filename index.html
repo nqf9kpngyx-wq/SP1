@@ -1793,8 +1793,8 @@ function useAppState() {
   }));
   const [dailyPlan, setDailyPlanRaw] = React.useState(() => {
     const saved = DB.get('dailyPlan', null);
-    // Re-build if an older plan still contains the removed dictation step
-    if (saved && saved.date === todayStr() && !saved.steps.some(s => s.id === 'dictation')) return saved;
+    // Re-build unless the saved plan already uses the new single combined step
+    if (saved && saved.date === todayStr() && saved.steps.length === 1 && saved.steps[0].id === 'daily') return saved;
     return buildDailyPlan();
   });
 
@@ -1863,8 +1863,7 @@ function buildDailyPlan() {
   return {
     date: todayStr(),
     steps: [
-      { id: 'warmup', kind: 'Opvarmning', title: 'Repetér dine ord', meta: '6 min · SM-2 repetition', icon: '〜', state: 'pending', xp: 40 },
-      { id: 'lesson', kind: 'Dagens lektion', title: 'Nyt ordforråd', meta: '16 min · 10 øvelser', icon: '☕', state: 'locked', xp: 80 },
+      { id: 'daily', kind: 'Dagens lektion', title: 'Dagens samlede lektion', meta: '20 min · 75% kendte · 25% nye', icon: '☕', state: 'pending', xp: 120 },
     ],
   };
 }
@@ -2010,6 +2009,44 @@ const STORIES = [
     ],
   },
 ];
+
+// Combined daily session: merges the old warmup (review) and lesson (new words)
+// into one. Question split: 75% on already-seen ("kendte") words, 25% on new words.
+function generateDailySession(wordProgress, allWords, profile) {
+  const levelOrder = ['A1', 'A2', 'B1', 'B2'];
+  const userLevel = profile.level || 'A1';
+  const levelIdx = levelOrder.indexOf(userLevel);
+  const eligibleLevels = levelOrder.slice(0, levelIdx + 1);
+  const eligible = allWords.filter(w => eligibleLevels.includes(w.level));
+  const today = todayStr();
+
+  // Known pool = words already exposed. Due cards first, then any other seen word
+  // (all seen words weighted equally — not biased toward not-yet-mastered ones).
+  const seen = eligible.filter(w => wordProgress[w.id]);
+  const due = seen.filter(w => (wordProgress[w.id].due || today) <= today);
+  const notDue = seen.filter(w => (wordProgress[w.id].due || today) > today);
+  const knownOrdered = [...shuffle(due), ...shuffle(notDue)];
+  // Until enough words are seen, fall back to eligible so the session is never thin.
+  const knownPool = (knownOrdered.length >= 8 ? knownOrdered : shuffle(eligible)).slice(0, 28);
+
+  // New pool = never-seen words (fall back to eligible when none remain).
+  const unseen = eligible.filter(w => !wordProgress[w.id]);
+  const newPool = (unseen.length ? shuffle(unseen) : shuffle(eligible)).slice(0, 12);
+
+  const q = [];
+  // ── 75%: kendte ord (24 of 32 questions) ──
+  q.push(makePairQuestion(pickRandom(knownPool, 4)));
+  q.push(makePairQuestion(pickRandom(knownPool, 4)));
+  pickRandom(knownPool, 10).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
+  pickRandom(knownPool, 7).forEach(w => q.push(makeTypeSpanishQuestion(w)));
+  pickRandom(knownPool, 5).forEach(w => q.push(makeClozeQuestion(w)));
+  // ── 25%: nye ord (8 of 32 questions) ──
+  q.push(makePairQuestion(pickRandom(newPool, 4)));
+  pickRandom(newPool, 5).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
+  pickRandom(newPool, 2).forEach(w => q.push(makeTypeSpanishQuestion(w)));
+
+  return shuffle(q);
+}
 
 function generateWarmupSession(wordProgress, allWords) {
   const today = todayStr();
@@ -2824,8 +2861,7 @@ const HomeScreen = ({ go, theme: t, appState }) => {
 
   const handleStepClick = (step) => {
     if (step.state === 'locked') return;
-    if (step.id === 'warmup') go('warmup');
-    else if (step.id === 'lesson') go('lesson');
+    if (step.id === 'daily') go('daily');
   };
 
   const steps = dailyPlan.steps;
@@ -3726,8 +3762,7 @@ function App() {
   // Start a daily plan step
   const startPlanStep = (stepId) => {
     launchSession(stepId, () => {
-      if (stepId === 'warmup') return { questions: generateWarmupSession(wordProgress, WORDS), title: 'Opvarmning', xpPer: 3 };
-      if (stepId === 'lesson') return { questions: generateLessonSession(wordProgress, WORDS, profile), title: 'Nyt ordforråd', xpPer: 6 };
+      if (stepId === 'daily') return { questions: generateDailySession(wordProgress, WORDS, profile), title: 'Dagens lektion', xpPer: 4 };
       return {};
     });
   };
@@ -3779,7 +3814,7 @@ function App() {
     if (Object.keys(wpUpdates).length) saveWordProgress(wpUpdates);
 
     // Update plan steps
-    if (['warmup','lesson'].includes(sessionData.type)) {
+    if (sessionData.type === 'daily') {
       const steps = dailyPlan.steps.map(s => {
         if (s.id === sessionData.type) return { ...s, state: 'done' };
         // Unlock next step
@@ -3810,8 +3845,7 @@ function App() {
   };
 
   const goRoute = (dest) => {
-    if (dest === 'warmup') { startPlanStep('warmup'); return; }
-    if (dest === 'lesson') { startPlanStep('lesson'); return; }
+    if (dest === 'daily') { startPlanStep('daily'); return; }
     setScreen(dest);
   };
 
