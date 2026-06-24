@@ -1785,6 +1785,9 @@ function useAppState() {
     name: 'ven', level: 'A1', theme: 'terracotta',
     streak: 0, lastStudied: null, totalXP: 0, studyMinutes: 0,
     showLabels: true,
+    // Adaptive lesson sizing: smoothed seconds-per-question estimate. Recalibrated
+    // after each completed daily lesson so the lesson drifts toward ~20 min.
+    secsPerQ: DAILY_DEFAULT_SECS_PER_Q,
   }));
   const [wordProgress, setWordProgressRaw] = React.useState(() => DB.get('wordProgress', {}));
   const [gramProgress, setGramProgressRaw] = React.useState(() => DB.get('gramProgress', {}));
@@ -1795,7 +1798,8 @@ function useAppState() {
     const saved = DB.get('dailyPlan', null);
     // Re-build unless the saved plan already uses the new single combined step
     if (saved && saved.date === todayStr() && saved.steps.length === 1 && saved.steps[0].id === 'daily') return saved;
-    return buildDailyPlan();
+    const savedProfile = DB.get('profile', {});
+    return buildDailyPlan(savedProfile.secsPerQ);
   });
 
   const saveProfile = (updates) => {
@@ -1864,11 +1868,13 @@ function useAppState() {
   };
 }
 
-function buildDailyPlan() {
+function buildDailyPlan(secsPerQ) {
+  const count = dailyTargetCount(secsPerQ);
   return {
     date: todayStr(),
     steps: [
-      { id: 'daily', kind: 'Dagens lektion', title: 'Dagens samlede lektion', meta: '25 min · 75% kendte · 25% nye', icon: '☕', state: 'pending', xp: 120 },
+      { id: 'daily', kind: 'Dagens lektion', title: 'Dagens samlede lektion',
+        meta: `${count} opgaver · ca. 20 min · 75% kendte · 25% nye`, icon: '☕', state: 'pending', xp: 120 },
     ],
   };
 }
@@ -2015,8 +2021,50 @@ const STORIES = [
   },
 ];
 
+// ── Adaptive daily-lesson sizing ─────────────────────────
+// Target wall-clock time for the daily lesson. The number of questions is
+// recalibrated after each completed lesson from a smoothed seconds-per-question
+// estimate, so the lesson drifts toward ~20 min based on how long the user
+// actually takes — not a fixed estimate.
+const DAILY_TARGET_SECONDS = 20 * 60;          // aim: ~20 minutes
+const DAILY_MIN_Q = 20;                          // never fewer than 20 questions
+const DAILY_MAX_Q = 60;                          // never more than 60 questions
+const DAILY_DEFAULT_SECS_PER_Q = DAILY_TARGET_SECONDS / 40; // 30s — a 40-question default
+const DAILY_CALIB_ALPHA = 0.3;                   // EMA weight on the most recent lesson
+
+// How many questions next lesson should have, given the smoothed pace.
+function dailyTargetCount(secsPerQ) {
+  const spq = secsPerQ > 0 ? secsPerQ : DAILY_DEFAULT_SECS_PER_Q;
+  const n = Math.round(DAILY_TARGET_SECONDS / spq);
+  return Math.max(DAILY_MIN_Q, Math.min(DAILY_MAX_Q, n));
+}
+
+// Blend the just-finished lesson's pace into the running estimate (glidende
+// gennemsnit), so one unusually slow/fast day doesn't swing the count wildly.
+function updateDailyCalibration(prevSecsPerQ, elapsedSeconds, questionCount) {
+  const prev = prevSecsPerQ > 0 ? prevSecsPerQ : DAILY_DEFAULT_SECS_PER_Q;
+  if (!questionCount || !(elapsedSeconds > 0)) return prev;
+  // Clamp the observation so an abandoned/left-open tab can't skew the slider.
+  const observed = Math.max(5, Math.min(120, elapsedSeconds / questionCount));
+  return prev * (1 - DAILY_CALIB_ALPHA) + observed * DAILY_CALIB_ALPHA;
+}
+
+// Distribute `total` items across weighted categories, summing exactly to total.
+// Remainders go to the categories with the largest fractional parts.
+function distributeCounts(total, weights) {
+  const raw = weights.map(w => total * w);
+  const counts = raw.map(Math.floor);
+  let used = counts.reduce((a, b) => a + b, 0);
+  const order = raw
+    .map((r, i) => ({ i, frac: r - Math.floor(r) }))
+    .sort((a, b) => b.frac - a.frac);
+  for (let k = 0; used < total; k++, used++) counts[order[k % order.length].i]++;
+  return counts;
+}
+
 // Combined daily session: merges the old warmup (review) and lesson (new words)
 // into one. Question split: 75% on already-seen ("kendte") words, 25% on new words.
+// The total question count is adaptive (see dailyTargetCount).
 function generateDailySession(wordProgress, allWords, profile) {
   const levelOrder = ['A1', 'A2', 'B1', 'B2'];
   const userLevel = profile.level || 'A1';
@@ -2038,18 +2086,24 @@ function generateDailySession(wordProgress, allWords, profile) {
   const unseen = eligible.filter(w => !wordProgress[w.id]);
   const newPool = (unseen.length ? shuffle(unseen) : shuffle(eligible)).slice(0, 12);
 
+  // Adaptive total, split 75% kendte / 25% nye, then proportionally across types.
+  const targetCount = dailyTargetCount(profile.secsPerQ);
+  const knownTotal = Math.round(targetCount * 0.75);
+  const newTotal = targetCount - knownTotal;
+  // Type mix mirrors the original 40-question layout's proportions.
+  const [kPair, kVocab, kType, kCloze] = distributeCounts(knownTotal, [0.10, 0.40, 0.30, 0.20]);
+  const [nPair, nVocab, nType] = distributeCounts(newTotal, [0.10, 0.60, 0.30]);
+
   const q = [];
-  // ── 75%: kendte ord (30 of 40 questions) ──
-  q.push(makePairQuestion(pickRandom(knownPool, 4)));
-  q.push(makePairQuestion(pickRandom(knownPool, 4)));
-  q.push(makePairQuestion(pickRandom(knownPool, 4)));
-  pickRandom(knownPool, 12).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
-  pickRandom(knownPool, 9).forEach(w => q.push(makeTypeSpanishQuestion(w)));
-  pickRandom(knownPool, 6).forEach(w => q.push(makeClozeQuestion(w)));
-  // ── 25%: nye ord (10 of 40 questions) ──
-  q.push(makePairQuestion(pickRandom(newPool, 4)));
-  pickRandom(newPool, 6).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
-  pickRandom(newPool, 3).forEach(w => q.push(makeTypeSpanishQuestion(w)));
+  // ── 75%: kendte ord ──
+  for (let i = 0; i < kPair; i++) q.push(makePairQuestion(pickRandom(knownPool, 4)));
+  pickRandom(knownPool, kVocab).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
+  pickRandom(knownPool, kType).forEach(w => q.push(makeTypeSpanishQuestion(w)));
+  pickRandom(knownPool, kCloze).forEach(w => q.push(makeClozeQuestion(w)));
+  // ── 25%: nye ord ──
+  for (let i = 0; i < nPair; i++) q.push(makePairQuestion(pickRandom(newPool, 4)));
+  pickRandom(newPool, nVocab).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
+  pickRandom(newPool, nType).forEach(w => q.push(makeTypeSpanishQuestion(w)));
 
   return shuffle(q);
 }
@@ -2738,8 +2792,9 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
         if (step + 1 >= questions.length) {
           const allResults = resultsRef.current;
           const finalCorrect = allResults.filter(r => r.ok).length;
-          const minutes = Math.round((Date.now() - startTime.current) / 60000) || 1;
-          onComplete({ results: allResults, correct: finalCorrect, wrong: 0, minutes });
+          const seconds = Math.round((Date.now() - startTime.current) / 1000);
+          const minutes = Math.round(seconds / 60) || 1;
+          onComplete({ results: allResults, correct: finalCorrect, wrong: 0, minutes, seconds });
         } else {
           setStep(s => s + 1);
         }
@@ -2754,8 +2809,9 @@ const SessionRunner = ({ questions, t, onComplete, onExit, title, subtitle, isDe
       DB.remove(DRAFT_KEY); // clear draft on completion
       const allResults = resultsRef.current;
       const finalCorrect = allResults.filter(r => r.ok).length;
-      const minutes = Math.round((Date.now() - startTime.current) / 60000) || 1;
-      onComplete({ results: allResults, correct: finalCorrect, wrong: total - finalCorrect, minutes });
+      const seconds = Math.round((Date.now() - startTime.current) / 1000);
+      const minutes = Math.round(seconds / 60) || 1;
+      onComplete({ results: allResults, correct: finalCorrect, wrong: total - finalCorrect, minutes, seconds });
     } else {
       setStep(s => s + 1);
     }
@@ -3047,7 +3103,7 @@ const LessonCard = ({ l, t, onClick, isLast }) => {
 // ══════════════════════════════════════════════════════════
 
 const CompleteScreen = ({ go, theme: t, sessionResult, onReturn }) => {
-  const { correct, wrong, xp, minutes, title } = sessionResult;
+  const { correct, wrong, xp, minutes, title, nextCount } = sessionResult;
   const total = correct + wrong;
   const accuracy = total > 0 ? Math.round((correct/total)*100) : 100;
   return (
@@ -3075,6 +3131,12 @@ const CompleteScreen = ({ go, theme: t, sessionResult, onReturn }) => {
           </div>
         ))}
       </div>
+      {nextCount != null && (
+        <p style={{ fontFamily:t.sans, fontSize:13, color:t.muted, textAlign:'center',
+          margin:'18px 0 0', maxWidth:280, lineHeight:1.5 }}>
+          Næste dagslektion justeres til <strong style={{ color:t.ink2 }}>{nextCount} opgaver</strong> for at ramme ca. 20 min.
+        </p>
+      )}
       <button onClick={onReturn || (() => go('home'))} style={{
         marginTop:24, width:'100%', padding:16, borderRadius:16,
         border:'none', background:t.primary, color:'#fff',
@@ -3805,8 +3867,9 @@ function App() {
   };
 
   const handleSessionComplete = (result) => {
-    const { results, correct, wrong, minutes } = result;
+    const { results, correct, wrong, minutes, seconds } = result;
     const xp = Math.round((results || []).filter(r => r.ok).length * (sessionData.xpPer || 5));
+    let nextCount = null;
 
     // Update SM-2 for words
     const wpUpdates = {};
@@ -3832,6 +3895,14 @@ function App() {
         return s;
       });
       saveDailyPlan({ ...dailyPlan, steps });
+
+      // Adaptive sizing: blend this lesson's actual pace into the running
+      // estimate and recompute how many questions next lesson should have.
+      const qCount = (sessionData.questions || []).length;
+      const elapsed = seconds || (minutes || 0) * 60;
+      const newSecsPerQ = updateDailyCalibration(profile.secsPerQ, elapsed, qCount);
+      nextCount = dailyTargetCount(newSecsPerQ);
+      saveProfile({ secsPerQ: newSecsPerQ });
     }
 
     recordSession(correct, wrong, xp, minutes);
@@ -3846,7 +3917,7 @@ function App() {
       setLevelUpMsg(check);
     }
 
-    setLastResult({ correct, wrong, xp, minutes, title: sessionData.title });
+    setLastResult({ correct, wrong, xp, minutes, title: sessionData.title, nextCount });
     setScreen('complete');
   };
 
