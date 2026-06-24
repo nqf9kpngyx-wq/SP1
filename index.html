@@ -1799,9 +1799,14 @@ function useAppState() {
   });
 
   const saveProfile = (updates) => {
-    const p = { ...profile, ...updates };
-    setProfileRaw(p);
-    DB.set('profile', p);
+    // Functional update: compose on the latest profile so multiple saveProfile
+    // calls within one handler (e.g. recordSession's streak update followed by an
+    // adaptive level change) don't overwrite each other with stale closure values.
+    setProfileRaw(prev => {
+      const p = { ...prev, ...updates };
+      DB.set('profile', p);
+      return p;
+    });
   };
   const saveWordProgress = (updates) => {
     const wp = { ...wordProgress, ...updates };
@@ -1863,7 +1868,7 @@ function buildDailyPlan() {
   return {
     date: todayStr(),
     steps: [
-      { id: 'daily', kind: 'Dagens lektion', title: 'Dagens samlede lektion', meta: '20 min · 75% kendte · 25% nye', icon: '☕', state: 'pending', xp: 120 },
+      { id: 'daily', kind: 'Dagens lektion', title: 'Dagens samlede lektion', meta: '25 min · 75% kendte · 25% nye', icon: '☕', state: 'pending', xp: 120 },
     ],
   };
 }
@@ -2034,16 +2039,17 @@ function generateDailySession(wordProgress, allWords, profile) {
   const newPool = (unseen.length ? shuffle(unseen) : shuffle(eligible)).slice(0, 12);
 
   const q = [];
-  // ── 75%: kendte ord (24 of 32 questions) ──
+  // ── 75%: kendte ord (30 of 40 questions) ──
   q.push(makePairQuestion(pickRandom(knownPool, 4)));
   q.push(makePairQuestion(pickRandom(knownPool, 4)));
-  pickRandom(knownPool, 10).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
-  pickRandom(knownPool, 7).forEach(w => q.push(makeTypeSpanishQuestion(w)));
-  pickRandom(knownPool, 5).forEach(w => q.push(makeClozeQuestion(w)));
-  // ── 25%: nye ord (8 of 32 questions) ──
+  q.push(makePairQuestion(pickRandom(knownPool, 4)));
+  pickRandom(knownPool, 12).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
+  pickRandom(knownPool, 9).forEach(w => q.push(makeTypeSpanishQuestion(w)));
+  pickRandom(knownPool, 6).forEach(w => q.push(makeClozeQuestion(w)));
+  // ── 25%: nye ord (10 of 40 questions) ──
   q.push(makePairQuestion(pickRandom(newPool, 4)));
-  pickRandom(newPool, 5).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
-  pickRandom(newPool, 2).forEach(w => q.push(makeTypeSpanishQuestion(w)));
+  pickRandom(newPool, 6).forEach((w, i) => q.push(makeVocabQuestion(w, allWords, i % 2 ? 'da→es' : 'es→da')));
+  pickRandom(newPool, 3).forEach(w => q.push(makeTypeSpanishQuestion(w)));
 
   return shuffle(q);
 }
