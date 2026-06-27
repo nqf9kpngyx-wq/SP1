@@ -2028,7 +2028,7 @@ const STORIES = [
 // actually takes — not a fixed estimate.
 const DAILY_TARGET_SECONDS = 20 * 60;          // aim: ~20 minutes
 const DAILY_MIN_Q = 20;                          // never fewer than 20 questions
-const DAILY_MAX_Q = 60;                          // never more than 60 questions
+const DAILY_MAX_Q = 120;                         // never more than 120 questions
 const DAILY_DEFAULT_SECS_PER_Q = DAILY_TARGET_SECONDS / 40; // 30s — a 40-question default
 const DAILY_CALIB_ALPHA = 0.3;                   // EMA weight on the most recent lesson
 
@@ -2080,11 +2080,11 @@ function generateDailySession(wordProgress, allWords, profile) {
   const notDue = seen.filter(w => (wordProgress[w.id].due || today) > today);
   const knownOrdered = [...shuffle(due), ...shuffle(notDue)];
   // Until enough words are seen, fall back to eligible so the session is never thin.
-  const knownPool = (knownOrdered.length >= 8 ? knownOrdered : shuffle(eligible)).slice(0, 28);
+  const knownPool = (knownOrdered.length >= 8 ? knownOrdered : shuffle(eligible)).slice(0, 60);
 
   // New pool = never-seen words (fall back to eligible when none remain).
   const unseen = eligible.filter(w => !wordProgress[w.id]);
-  const newPool = (unseen.length ? shuffle(unseen) : shuffle(eligible)).slice(0, 12);
+  const newPool = (unseen.length ? shuffle(unseen) : shuffle(eligible)).slice(0, 30);
 
   // Adaptive total, split 75% kendte / 25% nye, then proportionally across types.
   const targetCount = dailyTargetCount(profile.secsPerQ);
