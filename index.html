@@ -1874,7 +1874,7 @@ function buildDailyPlan(secsPerQ) {
     date: todayStr(),
     steps: [
       { id: 'daily', kind: 'Dagens lektion', title: 'Dagens samlede lektion',
-        meta: `${count} opgaver · ca. 20 min · 75% kendte · 25% nye`, icon: '☕', state: 'pending', xp: 120 },
+        meta: `${count} opgaver · ca. ${Math.round(DAILY_TARGET_SECONDS/60)} min · 75% kendte · 25% nye`, icon: '☕', state: 'pending', xp: 120 },
     ],
   };
 }
@@ -2026,10 +2026,10 @@ const STORIES = [
 // recalibrated after each completed lesson from a smoothed seconds-per-question
 // estimate, so the lesson drifts toward ~20 min based on how long the user
 // actually takes — not a fixed estimate.
-const DAILY_TARGET_SECONDS = 20 * 60;          // aim: ~20 minutes
+const DAILY_TARGET_SECONDS = 15 * 60;          // aim: ~15 minutes
 const DAILY_MIN_Q = 20;                          // never fewer than 20 questions
-const DAILY_MAX_Q = 120;                         // never more than 120 questions
-const DAILY_DEFAULT_SECS_PER_Q = DAILY_TARGET_SECONDS / 40; // 30s — a 40-question default
+const DAILY_MAX_Q = 150;                         // never more than 150 questions
+const DAILY_DEFAULT_SECS_PER_Q = DAILY_TARGET_SECONDS / 30; // 30s — a 30-question default
 const DAILY_CALIB_ALPHA = 0.3;                   // EMA weight on the most recent lesson
 
 // How many questions next lesson should have, given the smoothed pace.
@@ -3134,7 +3134,7 @@ const CompleteScreen = ({ go, theme: t, sessionResult, onReturn }) => {
       {nextCount != null && (
         <p style={{ fontFamily:t.sans, fontSize:13, color:t.muted, textAlign:'center',
           margin:'18px 0 0', maxWidth:280, lineHeight:1.5 }}>
-          Næste dagslektion justeres til <strong style={{ color:t.ink2 }}>{nextCount} opgaver</strong> for at ramme ca. 20 min.
+          Næste dagslektion justeres til <strong style={{ color:t.ink2 }}>{nextCount} opgaver</strong> for at ramme ca. {Math.round(DAILY_TARGET_SECONDS/60)} min.
         </p>
       )}
       <button onClick={onReturn || (() => go('home'))} style={{
@@ -3455,11 +3455,30 @@ const TrainScreen = ({ go, theme: t, appState, onStartDeep }) => {
 // SECTION 13: WORDS SCREEN
 // ══════════════════════════════════════════════════════════
 
+// Tæller hvor mange ord der matcher et givet filter (samme logik som listen nedenfor).
+function countForFilter(f, wordProgress) {
+  return WORDS.filter(w => {
+    const p = wordProgress[w.id];
+    if (f === 'Alle') return true;
+    if (['A1','A2','B1','B2'].includes(f)) return w.level === f;
+    if (f === 'Mestret') return p && p.reps >= 5;
+    if (f === 'Aktive') return p && p.reps > 0 && p.reps < 5;
+    return true;
+  }).length;
+}
+
 const WordsScreen = ({ go, theme: t, appState }) => {
   const { wordProgress } = appState;
   const [filter, setFilter] = React.useState('Alle');
   const [search, setSearch] = React.useState('');
   const filters = ['Alle','A1','A2','B1','B2','Aktive','Mestret'];
+
+  // Antal ord pr. filter — vises som tal på hver chip.
+  const filterCounts = React.useMemo(() => {
+    const counts = {};
+    filters.forEach(f => { counts[f] = countForFilter(f, wordProgress); });
+    return counts;
+  }, [wordProgress]);
 
   const filtered = WORDS.filter(w => {
     const p = wordProgress[w.id];
@@ -3515,7 +3534,9 @@ const WordsScreen = ({ go, theme: t, appState }) => {
             background: filter===f ? t.ink : 'transparent',
             color: filter===f ? t.bg : t.ink2,
             border: filter===f ? 'none' : `1px solid ${t.border}`,
-            fontFamily:t.sans, fontSize:13, fontWeight:600, cursor:'pointer' }}>{f}</button>
+            fontFamily:t.sans, fontSize:13, fontWeight:600, cursor:'pointer' }}>
+            {f} <span style={{ opacity:0.6, fontWeight:500 }}>{filterCounts[f]}</span>
+          </button>
         ))}
       </div>
       {/* List */}
